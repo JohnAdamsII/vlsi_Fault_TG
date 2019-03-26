@@ -1,0 +1,6 @@
+equivalence fault collapsing:
+In general, for a gate with controlling value c and inversion i, all the input s-a-c faults and the output s-a-(c XOR i) are functionally equivalent.
+
+
+dominance fault collapsing:
+In general, for a gate with controlling value c and inversion i, the output s-a-(C' XOR i) fault dominates any input s-a-c' fault.
