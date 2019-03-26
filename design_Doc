@@ -1,0 +1,35 @@
+VLSI Final Project design doc
+
+[0] Read the input net-list
+[1] Perform fault collapsing
+[2] List fault classes
+[3] Generate tests (D-Algorithm or PODEM)
+[4] Generate tests (Boolean satisfaibility)
+[5] Exit
+
+Modules:
+
+Error Handling
+File Reading
+Algorithms
+
+functions: 
+
+[0] Read the input net-list
+
+getNumLines # get number of lines in the netlist
+getPI #get primary input gates
+getPO #get primary output gates
+getConnects #get gate connections 
+
+[1] Perform fault collapsing
+
+for a gate with controlling value c and inversion i
+
+all the input s-a-c faults and the output s-a-(c@i) are functionally equivalent
+the output s -a -(C<±>i) fault dominates any input s -a -c fault
+
+[2] List fault classes
+
+list fault universe (initally all s-a-X faults for all inputs and output gates)
+list collapsed fault universe (if [1] was called first)
