@@ -6,8 +6,8 @@ parent_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) #path to parent 
 def benchmarkrunner():
     for file in os.listdir(parent_dir+'/benchmarks/'):
         if file.endswith(".ckt"):
-            #var = read_Netlist(file)
-            print(file)
+            var = read_Netlist(file)
+        
             #print(os.path.join(parent_dir+'/benchmarks/', file))
 
 
