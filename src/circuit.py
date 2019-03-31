@@ -1,8 +1,7 @@
 from operator import xor
 
 class circuit:
-    def __init__(self,name="",Type=None,PIs=[],POs=[],gates=[],output="x"):
-        self.name = name
+    def __init__(self,Type=None,PIs=[],POs=[],gates=[],output="x"):
         self.Type = Type
         self.PIs = PIs
         self.POs = POs
