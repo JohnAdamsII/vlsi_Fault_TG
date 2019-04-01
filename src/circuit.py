@@ -89,10 +89,6 @@ class circuit:
         
     
     def assignOutput(self,gate):
-            for k,v in self.gate_values.items():
-                if gate in v:
-                    key = k
-            print(key)
             Inputs = self.getInputs(gate) # list of inputs
             c = self.c(gate) # c of gate
             values = []
@@ -100,16 +96,20 @@ class circuit:
                 values.append(self.getInputValue(gate,Inputs))
             if c in values:
                 self.gate_map[gate][-1] = self.cXORi(gate)
-                self.gate_values[key][gate] = self.cXORi(gate)
+                self.propagate(gate,self.cXORi(gate))
             elif not(c in values) and not('x' in values):
                 self.gate_map[gate][-1] = self.cbarXORi(gate)
-                self.gate_values[key][gate] = self.cbarXORi(gate)
+                self.propagate(gate,self.cbarXORi(gate))
+                #self.gate_values[key][gate] = self.cbarXORi(gate)
             else: 
                 self.gate_map[gate][-1] = 'x'
-                self.gate_values[key][gate] = 'x'
+                self.propagate(gate,'x')
             
-    def propagate(self,gate):
-        pass
+    def propagate(self,gate,value):
+        for k,v in self.gate_values.items():
+                if gate in v:
+                    key = k
+        self.gate_values[key][gate] = value
     
     def propagatePIs(self):
         pass
