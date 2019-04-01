@@ -106,13 +106,19 @@ class circuit:
                 self.propagate(gate,'x')
             
     def propagate(self,gate,value):
+        fan_outs = []
         for k,v in self.gate_values.items():
                 if gate in v:
-                    key = k
-        self.gate_values[key][gate] = value
+                    fan_outs.append(k)
+        for inputs in fan_outs:
+            self.gate_values[inputs][gate] = value
+            self.gate_map[inputs][-1] = value
     
-    def propagatePIs(self):
+    def propagatePIs(self,PI_values):
         pass
+        #for gates,inputs in zip(self.PIs,PI_values):
+            #self.gate_values[gates]
+
     
     def setPIs(self):
         pass
@@ -164,13 +170,22 @@ if __name__ == '__main__':
     #ckt.setInputs('8gat',0,'5gat')
 
     ckt.setInputs('10gat',0,'1gat')
-    #ckt.setInputs('6gat',0,'3gat')
+    ckt.setInputs('10gat',1,'2gat')
+    ckt.setInputs('6gat',0,'3gat')
+    ckt.setInputs('7gat',1,'4gat')
+    ckt.setInputs('8gat',1,'5gat')
+
+    for k,v in ckt.gate_map.items():
+        print(k,v)
+
+    # for k,v in ckt.gate_values.items():
+    #     print(k,v)
 
     for k,v in ckt.gate_values.items():
         print(k,v)
         
-    for k,v in ckt.gate_map.items():
-        print(k,v)
+    # for k,v in ckt.gate_map.items():
+    #     print(k,v)
 
        #for gate in ckt.gates:
         #inputs = ckt.getInputs(gate)
