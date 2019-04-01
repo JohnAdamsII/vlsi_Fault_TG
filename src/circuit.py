@@ -5,6 +5,7 @@ class circuit:
     gate_map = {}
     gate_values = {}
 
+
     def __init__(self,PIs=[],POs=[],gates=[],output="x"):
         self.PIs = PIs
         self.POs = POs
@@ -67,26 +68,48 @@ class circuit:
         else:
             return self.gate_map[gate][0][0]
     
-    def getInputValues(self,gate,Input):
+    def getInputValue(self,gate,Input):
             return self.gate_values[gate][Input]
    
-    def setInputs(self,gate,value,set_all=True):
+    def setInputs(self,gate,value,Input=None,set_all=False):
         if set_all:
             for inputs in self.getInputs(gate):
-                if self.gate_values[gate][inputs] == 'x':
-                    self.gate_values[gate][inputs] = value
+                self.gate_values[gate][inputs] = value
+        else:
+            self.gate_values[gate][Input] = value
+        
+        self.assignOutput(gate)
+
+        #for k,v in self.gate_values.items():
+            #if gate in v:
+                #print(k)
+
+            
+
+        
     
     def assignOutput(self,gate):
+            for k,v in self.gate_values.items():
+                if gate in v:
+                    key = k
+            print(key)
             Inputs = self.getInputs(gate) # list of inputs
             c = self.c(gate) # c of gate
             values = []
             for Inputs in Inputs:
-                values.append(self.getInputValues(gate,Inputs))
+                values.append(self.getInputValue(gate,Inputs))
             if c in values:
                 self.gate_map[gate][-1] = self.cXORi(gate)
+                self.gate_values[key][gate] = self.cXORi(gate)
             elif not(c in values) and not('x' in values):
                 self.gate_map[gate][-1] = self.cbarXORi(gate)
-            else: self.gate_map[gate][-1] = 'x'
+                self.gate_values[key][gate] = self.cbarXORi(gate)
+            else: 
+                self.gate_map[gate][-1] = 'x'
+                self.gate_values[key][gate] = 'x'
+            
+    def propagate(self,gate):
+        pass
     
     def propagatePIs(self):
         pass
@@ -116,21 +139,40 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
    
-    for gate in ckt.gates:
-        print(gate,ckt.getType(gate),ckt.getInputs(gate),ckt.c(gate))
 
-    for k,v in ckt.gate_values.items():
-        print(k,v)
-        
-    for gate in ckt.gates:
-        ckt.setInputs(gate,0)
-
-    for k,v in ckt.gate_values.items():
-        print(k,v)
+    #for k,v in ckt.gate_map.items():
+        #print(k,v)
     
-    for gate in ckt.gates:
-        ckt.assignOutput(gate)
+    #for gate in ckt.gates:
+        #print(gate,ckt.getType(gate),ckt.getInputs(gate),ckt.c(gate))
+
+    # for k,v in ckt.gate_values.items():
+    #     print(k,v)
+
+    # for k,v in ckt.gate_map.items():
+    #     print(k,v)
+
+    # for k,v in ckt.gate_values.items():
+    #     print(k,v)
+
+    #for gate in ckt.gates:
+        #print(ckt.getInputValues(gate)) 
+    for k,v in ckt.gate_values.items():
+        print(k,v)
+
+    #ckt.setInputs('10gat',1,'2gat')
+    #ckt.setInputs('8gat',0,'5gat')
+
+    ckt.setInputs('10gat',0,'1gat')
+    #ckt.setInputs('6gat',0,'3gat')
+
+    for k,v in ckt.gate_values.items():
+        print(k,v)
         
     for k,v in ckt.gate_map.items():
         print(k,v)
+
+       #for gate in ckt.gates:
+        #inputs = ckt.getInputs(gate)
+        #ckt.setInputs(gate,value=0,Input=inputs[0])
          
