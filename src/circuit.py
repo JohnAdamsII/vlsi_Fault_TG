@@ -33,7 +33,7 @@ class circuit:
                 input_map[k]= [[input_map[k][0],input_map[k][1]]]
             else:
                 input_map[k] = [[input_map[k][0]]]
-        
+
         for k in input_map:
             input_map[k].append(type_map[k])
             Type = type_map[k]
@@ -45,9 +45,7 @@ class circuit:
             input_map[k].append( geti(Type) )
             input_map[k].append ( cXORi(getc(Type),geti(Type)) )
             input_map[k].append( cbarXORi(getc(Type),geti(Type)) )
-            input_map[k].append('x')
         
-
         for k in input_map:
             self.gate_values[k] = { input_map[k][0][0] : 'x', input_map[k][0][1] : 'x', 'output' : 'x'}
         
@@ -78,8 +76,7 @@ class circuit:
                     fan_outs.append(k)
         return fan_outs
 
-   
-    def setInputs(self,gate,value,Input):
+    def setInput(self,gate,Input,value):
         fan_outs = self.getFanouts(Input)
         for fanouts in fan_outs:
             self.gate_values[fanouts][Input] = value
@@ -118,10 +115,6 @@ class circuit:
             self.fault_set.add(str(gates)+"-s-a-0")
         return self.fault_set
        
-        
-   
-       
-
     def collapseFaults(self):
         pass
 
@@ -134,8 +127,13 @@ if __name__ == '__main__':
     ckt.makeCkt("t4_21.ckt")
 
     ckt.setPIs([0,1,0,1,1])
+
+    [print(k,v) for k,v in ckt.gate_values.items()]
    
     faults = ckt.getFaultList()
     [print(x) for x in faults]
+
+    for k,v in ckt.gate_map.items():
+        print(k,v)
         
          
