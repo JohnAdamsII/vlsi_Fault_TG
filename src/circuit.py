@@ -4,13 +4,13 @@ class circuit:
 
     gate_map = {}
     gate_values = {}
+    fault_set = set()
+    collapsed_fault_set = set()
 
-
-    def __init__(self,PIs=[],POs=[],gates=[],output="x"):
+    def __init__(self,PIs=[],POs=[],gates=[]):
         self.PIs = PIs
         self.POs = POs
         self.gates = gates
-        self.output = output
 
     def makeCkt(self,ckt_file):
         ckt = read_Netlist(ckt_file)  #use to read one circuits data
@@ -79,16 +79,10 @@ class circuit:
         return fan_outs
 
    
-    def setInputs(self,gate,value,Input=None,set_all=False):
+    def setInputs(self,gate,value,Input):
         fan_outs = self.getFanouts(Input)
         for fanouts in fan_outs:
             self.gate_values[fanouts][Input] = value
-        # if set_all:
-        #     for inputs in self.getInputs(gate):
-        #         self.gate_values[gate][inputs] = value
-        # else:
-        #     self.gate_values[gate][Input] = value
-        
         self.assignOutput(gate)
 
     def assignOutput(self,gate):
@@ -98,11 +92,9 @@ class circuit:
             for Inputs in Inputs:
                 values.append(self.getInputValue(gate,Inputs))
             if c in values:
-                #self.gate_map[gate][-1] = self.cXORi(gate)
                 self.gate_values[gate]['output'] = self.cXORi(gate)
                 self.propagate(gate,self.cXORi(gate))
             elif not(c in values) and not('x' in values):
-                #self.gate_map[gate][-1] = self.cbarXORi(gate)
                 self.gate_values[gate]['output'] = self.cbarXORi(gate)
                 self.propagate(gate,self.cbarXORi(gate))
             
@@ -111,12 +103,28 @@ class circuit:
         for inputs in fan_outs:
             self.gate_values[inputs][gate] = value
             self.gate_values[inputs]['output'] = value
-            #self.gate_map[inputs][-1] = value
     
     def setPIs(self,PI_values):
-        for gates,inputs in zip(self.PIs,PI_values):
-            print(gates,inputs)
-  
+        for index,PI in enumerate(self.PIs):
+            for k,v in self.gate_values.items():
+                if PI in v:
+                    self.gate_values[k][PI] = PI_values[index]
+                    self.assignOutput(k)
+    
+    def getFaultList(self):
+        all_gates = self.gates + self.PIs
+        for gates in all_gates:
+            self.fault_set.add(str(gates)+"-s-a-1")
+            self.fault_set.add(str(gates)+"-s-a-0")
+        return self.fault_set
+       
+        
+   
+       
+
+    def collapseFaults(self):
+        pass
+
     def D_algo(self):
         pass 
               
@@ -125,19 +133,9 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
 
-    ckt.setPIs([0,0,0,0,0])
+    ckt.setPIs([0,1,0,1,1])
    
-
-    for k,v in ckt.gate_values.items():
-        print(k,v)
-
-    ckt.setInputs('10gat',0,'1gat')
-    ckt.setInputs('10gat',1,'2gat')
-    ckt.setInputs('6gat',0,'3gat')
-    ckt.setInputs('7gat',1,'4gat')
-    ckt.setInputs('8gat',1,'5gat')
-
-    for k,v in ckt.gate_values.items():
-        print(k,v)
+    faults = ckt.getFaultList()
+    [print(x) for x in faults]
         
          
