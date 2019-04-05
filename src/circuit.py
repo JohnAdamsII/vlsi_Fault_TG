@@ -20,7 +20,7 @@ class circuit:
         self.PIs = ckt.PIs
         self.POs = ckt.POs
      
-        type_map,input_map,PI_value_map = ({} for i in range(3))
+        type_map,input_map = ({} for i in range(2))
     
         for gates,ckt_type in zip(self.gates,types):
             type_map[gates] = ckt_type
@@ -45,11 +45,14 @@ class circuit:
             input_map[k].append( geti(Type) )
             input_map[k].append ( cXORi(getc(Type),geti(Type)) )
             input_map[k].append( cbarXORi(getc(Type),geti(Type)) )
-        
+
         for k in input_map:
-            self.gate_values[k] = { input_map[k][0][0] : 'x', input_map[k][0][1] : 'x', 'output' : 'x'}
+            if input_map[k][1] == 'not':
+                self.gate_values[k] = { input_map[k][0][0] : 'x', 'output' : 'x'}
+            else: self.gate_values[k] = { input_map[k][0][0] : 'x', input_map[k][0][1] : 'x', 'output' : 'x'}
         
         self.gate_map = input_map
+        del type_map, input_map
         
     def c(self,gate):
         return self.gate_map[gate][2]
@@ -61,10 +64,7 @@ class circuit:
         return self.gate_map[gate][1]
     
     def getInputs(self,gate):
-        if len(self.gate_map[gate][0]) == 2:
-            return self.gate_map[gate][0]
-        else:
-            return self.gate_map[gate][0][0]
+        return self.gate_map[gate][0]
     
     def getInputValue(self,gate,Input):
             return self.gate_values[gate][Input]
@@ -85,10 +85,15 @@ class circuit:
     def assignOutput(self,gate):
             Inputs = self.getInputs(gate) # list of inputs
             c = self.c(gate) # c of gate
+            
             values = []
             for Inputs in Inputs:
                 values.append(self.getInputValue(gate,Inputs))
-            if c in values:
+
+            if self.getType(gate) == 'not':
+                self.gate_values[gate]['output'] = int(not(values[0]))
+                self.propagate(gate,int(not(values[0])))
+            elif c in values:
                 self.gate_values[gate]['output'] = self.cXORi(gate)
                 self.propagate(gate,self.cXORi(gate))
             elif not(c in values) and not('x' in values):
@@ -99,15 +104,17 @@ class circuit:
         fan_outs = self.getFanouts(gate)
         for inputs in fan_outs:
             self.gate_values[inputs][gate] = value
-            self.gate_values[inputs]['output'] = value
     
     def setPIs(self,PI_values):
         for index,PI in enumerate(self.PIs):
             for k,v in self.gate_values.items():
                 if PI in v:
                     self.gate_values[k][PI] = PI_values[index]
-                    self.assignOutput(k)
     
+        #assign all outputs afer setting input
+        for gate in self.gates:
+            self.assignOutput(gate)
+
     def getFaultList(self):
         all_gates = self.gates + self.PIs
         for gates in all_gates:
@@ -118,22 +125,30 @@ class circuit:
     def collapseFaults(self):
         pass
 
+    def faultDom(self):
+        pass
+
+    def faultEq(self):
+        pass
+
     def D_algo(self):
         pass 
               
 if __name__ == '__main__':
     
     ckt = circuit()
-    ckt.makeCkt("t4_21.ckt")
-
-    ckt.setPIs([0,1,0,1,1])
+    #ckt.makeCkt("t4_21.ckt")
+    ckt.makeCkt("t4_3.ckt")
+  
+    #ckt.setPIs([0,1,1,'x'])
+    ckt.setPIs([1,1,1,1])
 
     [print(k,v) for k,v in ckt.gate_values.items()]
-   
-    faults = ckt.getFaultList()
-    [print(x) for x in faults]
 
-    for k,v in ckt.gate_map.items():
-        print(k,v)
-        
-         
+    
+   
+    #faults = ckt.getFaultList()
+    #[print(x) for x in faults]
+
+    # for k,v in ckt.gate_map.items():
+    #     print(k,v)
