@@ -1,11 +1,10 @@
 from read_Netlist import read_Netlist
 
-
 class circuit:
 
     gate_map = {}
     gate_values = {}
-    fault_set = set()
+    fault_list = []
     collapsed_fault_list = []
 
     def __init__(self, PIs=[], POs=[], gates=[]):
@@ -18,8 +17,7 @@ class circuit:
 
         self.gates = [x[0] for x in ckt.wires]
         types = [x[1] for x in ckt.wires]
-        self.PIs = ckt.PIs
-        self.POs = ckt.POs
+        self.PIs, self.POs = ckt.PIs, ckt.POs
 
         type_map, input_map = ({} for i in range(2))
 
@@ -38,24 +36,18 @@ class circuit:
         for k in input_map:
             input_map[k].append(type_map[k])
             Type = type_map[k]
-            def getc(x): return 0 if x == 'and' or x == 'nand' else (
-                None if x == 'not' else 1)
-            def geti(x): return 0 if x == 'and' or x == 'or' else (
-                None if x == 'not' else 1)
+            def getc(x): return 0 if x == 'and' or x == 'nand' else (None if x == 'not' else 1)
+            def geti(x): return 0 if x == 'and' or x == 'or' else (None if x == 'not' else 1)
 
             def cXORi(c, i): return None if c == None else c ^ i
-            def cbarXORi(c, i): return None if c == None else int(not c ^ i)
-            input_map[k].append(getc(Type))
-            input_map[k].append(geti(Type))
-            input_map[k].append(cXORi(getc(Type), geti(Type)))
-            input_map[k].append(cbarXORi(getc(Type), geti(Type)))
+            def cbarXORi(c, i): return None if c == None else int(not c ^ i) 
+            input_map[k].extend(  [getc(Type),geti(Type),cXORi(getc(Type), geti(Type)),cbarXORi(getc(Type), geti(Type))] )
 
         for k in input_map:
             if input_map[k][1] == 'not':
                 self.gate_values[k] = {input_map[k][0][0]: 'x', 'output': 'x'}
             else:
-                self.gate_values[k] = {
-                    input_map[k][0][0]: 'x', input_map[k][0][1]: 'x', 'output': 'x'}
+                self.gate_values[k] = {input_map[k][0][0]: 'x', input_map[k][0][1]: 'x', 'output': 'x'}
 
         self.gate_map = input_map
         del type_map, input_map
@@ -125,18 +117,22 @@ class circuit:
             self.assignOutput(gate)
 
     def getFaultList(self):
-        #all_gates = self.gates + self.PIs
+        all_gates = self.gates + self.PIs
         fault_list = []
-        gates = self.gates
+        
+        for gate in all_gates:
+            fault_list.extend( [str(gate)+'-0',str(gate)+'-1'] )
+          
+        self.fault_list = sorted(fault_list, key=lambda x: int(x[0][0]))
+        return self.fault_list
 
     def collapseFaults(self):
-
         fault_set = set()
         for gate in ckt.gates:
             eq = ckt.func_eq(gate)
             if eq:
                 fault_set.add(eq[0])
-                
+                    
         for gate in ckt.gates:
             dom = ckt.dom(gate)
             if dom:
@@ -144,32 +140,6 @@ class circuit:
 
         self.collapsed_fault_list = sorted(fault_set, key=lambda x: int(x[0][0]))
         return self.collapsed_fault_list
-
-    def faultDom(self):
-        gates = self.gates
-
-        for gate in gates:
-            if self.getType(gate) == 'not':
-                continue
-            else:
-                inputs = self.getInputs(gate)
-                print(self.getType(gate), gate, 's-a-', self.cbarXORi(gate),
-                      "dominates input", inputs[0], 's-a-', int(not(self.c(gate))))
-                print(self.getType(gate), gate, 's-a-', self.cbarXORi(gate),
-                      "dominates input", inputs[1], 's-a-', int(not(self.c(gate))))
-
-    def faultEq(self):
-        gates = self.gates
-
-        for gate in gates:
-            if self.getType(gate) == 'not':
-                continue
-            else:
-                inputs = self.getInputs(gate)
-                print(self.getType(gate), gate, 's-a-', self.cXORi(gate),
-                      "functionally equivalent to", inputs[0], 's-a-', self.c(gate))
-                print(self.getType(gate), gate, 's-a-', self.cXORi(gate),
-                      "functionally equivalent to", inputs[1], 's-a-', self.c(gate))
 
     def func_eq(self, gate):
         if self.getType(gate) == 'not':
@@ -195,14 +165,19 @@ if __name__ == '__main__':
     # ckt.makeCkt("t4_21.ckt")
     ckt.makeCkt("t4_3.ckt")
 
-    # ckt.setPIs([0,1,1,'x'])
-    #ckt.setPIs([1,1,1,1])
+    #ckt.setPIs([0,1,1,'x'])
+    #[print(k,v) for k,v in ckt.gate_values.items()]
 
-    fault_list = ckt.collapseFaults()
+    ckt.setPIs([1,1,1,1])
+    [print(k,v) for k,v in ckt.gate_values.items()]
+
+
+    fault_list = ckt.getFaultList()
     print(fault_list)
-    # ckt.getFaultList()
-    # ckt.faultDom()
-    # ckt.faultEq()
+
+    collapsed_fault_list = ckt.collapseFaults()
+    print(collapsed_fault_list)
+ 
     #[print(k,v) for k,v in ckt.gate_values.items()]
 
     # for k,v in ckt.gate_map.items():
