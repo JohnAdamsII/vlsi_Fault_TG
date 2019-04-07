@@ -128,13 +128,13 @@ class circuit:
 
     def collapseFaults(self):
         fault_set = set()
-        for gate in ckt.gates:
-            eq = ckt.func_eq(gate)
+        for gate in self.gates:
+            eq = self.func_eq(gate)
             if eq:
                 fault_set.add(eq[0])
                     
-        for gate in ckt.gates:
-            dom = ckt.dom(gate)
+        for gate in self.gates:
+            dom = self.dom(gate)
             if dom:
                 fault_set.update((dom[1], dom[2]))
 
