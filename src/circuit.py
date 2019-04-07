@@ -123,7 +123,7 @@ class circuit:
         for gate in all_gates:
             fault_list.extend( [str(gate)+'-0',str(gate)+'-1'] )
           
-        self.fault_list = sorted(fault_list, key=lambda x: int(x[0][0]))
+        self.fault_list = sorted(fault_list, key=lambda x: x[0][0])
         return self.fault_list
 
     def collapseFaults(self):
@@ -138,7 +138,7 @@ class circuit:
             if dom:
                 fault_set.update((dom[1], dom[2]))
 
-        self.collapsed_fault_list = sorted(fault_set, key=lambda x: int(x[0][0]))
+        self.collapsed_fault_list = sorted(fault_set, key=lambda x: x[0][0])
         return self.collapsed_fault_list
 
     def func_eq(self, gate):
