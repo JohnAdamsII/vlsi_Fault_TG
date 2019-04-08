@@ -45,23 +45,21 @@ def main():
         elif num == 3:
             pass
         elif num == 4:
-            # need to do exception handling and check if this works on windows
-            compilecppcode = subprocess.call("g++" + " main.cpp", shell=True)
+            # need to check if this works on windows
+            try:
+                compilecppcode = subprocess.call("g++" + " main.cpp", shell=True)
+                if compilecppcode < 0:
+                    print("Process was terminated by signal", -compilecppcode, file=sys.stderr)
+                else:
+                    print("Compilation returned", compilecppcode, file=sys.stderr)
+            except OSError as e:
+                print("Compilation failed:", e, file=sys.stderr)
+
             runexe = subprocess.call("./a.out", shell=True)
         elif num == 5:
             sys.exit(0)
         else:
             print("Invalid input!")
     
-
-   
-    
-
-
-
-    #benchmarkrunner()      #use to print data of all benchmark circuits
-    #ckt_file = "t4_21.ckt"
-    #ckt = read_Netlist(ckt_file)  #use to read one circuits data
-   
 if __name__ == '__main__':
     main()

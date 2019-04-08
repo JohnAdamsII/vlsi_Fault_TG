@@ -10,7 +10,7 @@ import circuit
 
 #unit test docs https://docs.python.org/3/library/unittest.html#unittest.TestCase.debug
 #run on terminal with python -m unittest test_circuit.py
-#or if call unittest.main() (see below) to just run python3 test_circuit.py
+#or if unittest.main() (see below) to just run python3 test_circuit.py
 
 class TestCalc(unittest.TestCase):
 
