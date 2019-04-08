@@ -17,7 +17,6 @@ def benchmarkrunner():
     print(num_Files,"circuits detected! Please select the corresponding number to read the netlist")
     selection = int(input(""))
 
-    #print(file_map.get(selection, "Invalid input"))
     ckt = read_Netlist(file_map[selection])
     printCircuit(ckt,file_map[selection])
     return file_map[selection]

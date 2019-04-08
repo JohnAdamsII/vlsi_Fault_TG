@@ -1,7 +1,7 @@
 from read_Netlist import read_Netlist
 from benchmarkrunner import benchmarkrunner,printCircuit
 from circuit import circuit
-import sys
+import sys, subprocess
 
 def main():
 
@@ -43,7 +43,11 @@ def main():
             else:
                 print("Please read in netlist first")
         elif num == 3:
-            print("")
+            pass
+        elif num == 4:
+            # need to do exception handling and check if this works on windows
+            compilecppcode = subprocess.call("g++" + " main.cpp", shell=True)
+            runexe = subprocess.call("./a.out", shell=True)
         elif num == 5:
             sys.exit(0)
         else:
