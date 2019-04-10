@@ -1,0 +1,3 @@
+[submodule "vender/minisat"]
+	path = vender/minisat
+	url = https://github.com/niklasso/minisat.git

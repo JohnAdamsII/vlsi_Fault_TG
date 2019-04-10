@@ -44,8 +44,9 @@ def main():
                 print("Please read in netlist first")
         elif num == 3:
             pass
+            #D algorithmn goes here
+            pass
         elif num == 4:
-            # need to check if this works on windows
             try:
                 compilecppcode = subprocess.call("g++" + " main.cpp", shell=True)
                 if compilecppcode < 0:
