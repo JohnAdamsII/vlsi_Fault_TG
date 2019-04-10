@@ -1,0 +1,3 @@
+move benchmark (.ckt files) to the project directory/benchmarks
+cd to project directory/src
+run command "python3 main.py"
