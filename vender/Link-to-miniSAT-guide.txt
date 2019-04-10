@@ -1,0 +1,4 @@
+https://dwheeler.com/essays/minisat-user-guide.html
+
+another potentially helpful link 
+https://web.cecs.pdx.edu/~hook/logicw11/Exercises/Ex4Minisat.html
