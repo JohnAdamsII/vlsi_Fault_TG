@@ -1,3 +1,9 @@
-move benchmark (.ckt files) to the project directory/benchmarks
-cd to project directory/src
+move benchmark (.ckt files) to the project vlsi_Fault_TG/benchmarks
+cd to project directory vlsi_Fault_TG/src
 run command "python3 main.py"
+
+tested on linux Ubuntu 18.04 LTS and Windows 10 
+
+dependencies:
+python3
+g++ 
