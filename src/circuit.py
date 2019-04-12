@@ -1,5 +1,5 @@
 from read_Netlist import read_Netlist
-from sympy import *
+from sympy import to_cnf,symbols
 class circuit:
 
     gate_map = {}
@@ -167,21 +167,70 @@ if __name__ == '__main__':
     expr_map = {}
     for gate in ckt.gates:
         print(gate,ckt.getType(gate),ckt.getInputs(gate))
-        #print(ckt.getInputs(gate)[0])
-        if ckt.getType(gate) == 'nor':
+
+        if ckt.getType(gate) == 'not':
+
             in1 = ckt.getInputs(gate)[0]
-            in2 = ckt.getInputs(gate)[1]
-            s1 , s2 = symbols(in1+','+in2)
+            s1 = symbols(in1)
         
-            str_repr = str(to_cnf(~(s1 | s2)))
+            str_repr = str(to_cnf( ~s1 ))
             
-            expr_map[gate] = [to_cnf(  ~(s1 | s2), True)]
+            expr_map[gate] = [to_cnf(~s1)]
+            expr_map[gate].append(str_repr)
+
+        if ckt.getType(gate) == 'nor':
+            inputs = []
+            for Input in ckt.getInputs(gate):
+                if Input in expr_map.keys():
+                    inputs.append(expr_map[Input][0])
+                else:
+                    inputs.append(symbols(Input))
+            
+            expr_map[gate] = [to_cnf(  ~(inputs[0] | inputs[1]), True)]
+            str_repr = str(to_cnf(~(inputs[0] | inputs[1])))
+            expr_map[gate].append(str_repr)
+
+        if ckt.getType(gate) == 'nand':
+            inputs = []
+            for Input in ckt.getInputs(gate):
+                if Input in expr_map.keys():
+                    inputs.append(expr_map[Input][0])
+                else:
+                    inputs.append(symbols(Input))
+            
+            expr_map[gate] = [to_cnf(  ~(inputs[0] & inputs[1]), True)]
+            str_repr = str(to_cnf(~(inputs[0] & inputs[1])))
+            expr_map[gate].append(str_repr)
+     
+        if ckt.getType(gate) == 'and':
+            inputs = []
+            for Input in ckt.getInputs(gate):
+                if Input in expr_map.keys():
+                    inputs.append(expr_map[Input][0])
+                else:
+                    inputs.append(symbols(Input))
+            
+            expr_map[gate] = [to_cnf(  (inputs[0] & inputs[1]), True)]
+            str_repr = str(to_cnf( (inputs[0] & inputs[1])))
+            expr_map[gate].append(str_repr)
+
+        if ckt.getType(gate) == 'or':
+            inputs = []
+            for Input in ckt.getInputs(gate):
+                if Input in expr_map.keys():
+                    inputs.append(expr_map[Input][0])
+                else:
+                    inputs.append(symbols(Input))
+            
+            expr_map[gate] = [to_cnf(  (inputs[0] | inputs[1]), True)]
+            str_repr = str(to_cnf( (inputs[0] | inputs[1])))
             expr_map[gate].append(str_repr)
             
-            print(ckt.getInputs(gate)[0]," & ",ckt.getInputs(gate)[1])
-    
     [print(k,v) for k,v in expr_map.items()]
-    print(expr_map)
+
+    
+
+    #print(expr_map)
 
     #from sympy.abc import A, B
     #A, B = symbols('A,B')
