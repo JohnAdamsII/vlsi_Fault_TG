@@ -44,7 +44,7 @@ def main():
                 print("Please read in netlist first")
         elif num == 3:
             pass
-            #D algorithmn goes here
+            #! D algorithmn goes here
             pass
         elif num == 4:
             try:

@@ -1,5 +1,5 @@
 from read_Netlist import read_Netlist
-
+from sympy import *
 class circuit:
 
     gate_map = {}
@@ -162,21 +162,45 @@ class circuit:
 if __name__ == '__main__':
 
     ckt = circuit()
-    # ckt.makeCkt("t4_21.ckt")
-    ckt.makeCkt("t4_3.ckt")
+    ckt.makeCkt("t4_21.ckt")
+    #ckt.makeCkt("t4_3.ckt")
+    expr_map = {}
+    for gate in ckt.gates:
+        print(gate,ckt.getType(gate),ckt.getInputs(gate))
+        #print(ckt.getInputs(gate)[0])
+        if ckt.getType(gate) == 'nor':
+            in1 = ckt.getInputs(gate)[0]
+            in2 = ckt.getInputs(gate)[1]
+            s1 , s2 = symbols(in1+','+in2)
+        
+            str_repr = str(to_cnf(~(s1 | s2)))
+            
+            expr_map[gate] = [to_cnf(  ~(s1 | s2), True)]
+            expr_map[gate].append(str_repr)
+            
+            print(ckt.getInputs(gate)[0]," & ",ckt.getInputs(gate)[1])
+    
+    [print(k,v) for k,v in expr_map.items()]
+    print(expr_map)
+
+    #from sympy.abc import A, B
+    #A, B = symbols('A,B')
+    #A = 0
+    #B = 0
+    #print(to_cnf( (A | B) & (A | ~A), True) )
 
     #ckt.setPIs([0,1,1,'x'])
     #[print(k,v) for k,v in ckt.gate_values.items()]
 
-    ckt.setPIs([1,1,1,1])
-    [print(k,v) for k,v in ckt.gate_values.items()]
+    # ckt.setPIs([1,1,1,1])
+    # [print(k,v) for k,v in ckt.gate_values.items()]
 
 
-    fault_list = ckt.getFaultList()
-    print(fault_list)
+    # fault_list = ckt.getFaultList()
+    # print(fault_list)
 
-    collapsed_fault_list = ckt.collapseFaults()
-    print(collapsed_fault_list)
+    # collapsed_fault_list = ckt.collapseFaults()
+    # print(collapsed_fault_list)
  
     #[print(k,v) for k,v in ckt.gate_values.items()]
 
