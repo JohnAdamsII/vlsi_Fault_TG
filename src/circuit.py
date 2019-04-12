@@ -187,7 +187,7 @@ if __name__ == '__main__':
                     inputs.append(symbols(Input))
             
             expr_map[gate] = [to_cnf(  ~(inputs[0] | inputs[1]), True)]
-            str_repr = str(to_cnf(~(inputs[0] | inputs[1])))
+            str_repr = str(to_cnf(~(inputs[0] | inputs[1]), True))
             expr_map[gate].append(str_repr)
 
         if ckt.getType(gate) == 'nand':
@@ -199,7 +199,7 @@ if __name__ == '__main__':
                     inputs.append(symbols(Input))
             
             expr_map[gate] = [to_cnf(  ~(inputs[0] & inputs[1]), True)]
-            str_repr = str(to_cnf(~(inputs[0] & inputs[1])))
+            str_repr = str(to_cnf(~(inputs[0] & inputs[1]), True))
             expr_map[gate].append(str_repr)
      
         if ckt.getType(gate) == 'and':
@@ -211,7 +211,7 @@ if __name__ == '__main__':
                     inputs.append(symbols(Input))
             
             expr_map[gate] = [to_cnf(  (inputs[0] & inputs[1]), True)]
-            str_repr = str(to_cnf( (inputs[0] & inputs[1])))
+            str_repr = str(to_cnf( (inputs[0] & inputs[1]),True))
             expr_map[gate].append(str_repr)
 
         if ckt.getType(gate) == 'or':
@@ -223,10 +223,16 @@ if __name__ == '__main__':
                     inputs.append(symbols(Input))
             
             expr_map[gate] = [to_cnf(  (inputs[0] | inputs[1]), True)]
-            str_repr = str(to_cnf( (inputs[0] | inputs[1])))
+            str_repr = str(to_cnf( (inputs[0] | inputs[1]),True))
             expr_map[gate].append(str_repr)
             
     [print(k,v) for k,v in expr_map.items()]
+
+    POs = ckt.POs
+    ckt_expr = expr_map[POs[0]][1]
+    print(ckt_expr,type(ckt_expr))
+
+    #print(POs)
 
     
 
