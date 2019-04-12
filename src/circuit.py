@@ -229,10 +229,33 @@ if __name__ == '__main__':
     [print(k,v) for k,v in expr_map.items()]
 
     POs = ckt.POs
+    expr = expr_map[POs[0]][0]
     ckt_expr = expr_map[POs[0]][1]
     print(ckt_expr,type(ckt_expr))
+   
+    clauses = ckt_expr.split("&")
+    for index,item in enumerate(clauses):
+        clauses[index] = item.strip()
+        clauses[index] = clauses[index].replace("(","")
+        clauses[index] = clauses[index].replace(")","")
+        clauses[index] = clauses[index].replace("~","-")
+        clauses[index] = clauses[index].replace("|","")
+        clauses[index] = clauses[index].replace("  "," ")
+        clauses[index] = clauses[index].replace("gat","")
+    
+    num_Vars = len(ckt.PIs)
+    num_Clasues = len(clauses)
 
-    #print(POs)
+
+    #! WRITE DATA TO CNF_FILE
+    #! PARSE OUTPUT FOR TEST VECTOR
+    #! GET FAULT CIRCUIT EXPR
+    #! XOR WITH CORRECT CIRCUIT
+    
+
+
+    print(clauses)
+   
 
     
 
