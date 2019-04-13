@@ -15,5 +15,10 @@ run command "python3 main.py"
 tested on linux Ubuntu 18.04 LTS and Windows 10 
 
 dependencies:
+git
 python3
 g++ 
+
+
+make .sh shell script to download and build everything
+test on mac and windows

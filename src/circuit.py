@@ -1,8 +1,10 @@
 from read_Netlist import read_Netlist
 from sympy import to_cnf,symbols
+
 class circuit:
 
     gate_map = {}
+    expr_map = {}
     gate_values = {}
     fault_list = []
     collapsed_fault_list = []
@@ -157,6 +159,113 @@ class circuit:
 
     def D_algo(self):
         pass
+    
+    def build_Expr_map(self):
+        """ Needs to be tested with a ckt with a not gate """
+        for gate in self.gates:
+            if self.getType(gate) == 'not':
+
+                in1 = self.getInputs(gate)[0]
+                s1 = symbols(in1)
+            
+                str_repr = str(to_cnf( ~s1 ))
+                
+                self.expr_map[gate] = [to_cnf(~s1)]
+                self.expr_map[gate].append(str_repr)
+
+            if self.getType(gate) == 'nor':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [to_cnf(  ~(inputs[0] | inputs[1]), True)]
+                str_repr = str(to_cnf(~(inputs[0] | inputs[1]), True))
+                self.expr_map[gate].append(str_repr)
+
+            if self.getType(gate) == 'nand':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [to_cnf(  ~(inputs[0] & inputs[1]), True)]
+                str_repr = str(to_cnf(~(inputs[0] & inputs[1]), True))
+                self.expr_map[gate].append(str_repr)
+        
+            if self.getType(gate) == 'and':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [to_cnf(  (inputs[0] & inputs[1]), True)]
+                str_repr = str(to_cnf( (inputs[0] & inputs[1]),True))
+                self.expr_map[gate].append(str_repr)
+
+            if self.getType(gate) == 'or':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [to_cnf(  (inputs[0] | inputs[1]), True)]
+                str_repr = str(to_cnf( (inputs[0] | inputs[1]),True))
+                self.expr_map[gate].append(str_repr)
+        
+        return self.expr_map
+
+    def get_ckt_expr_str(self):
+        """ only works currently if ckt has only one PO """
+        return self.expr_map[self.POs[0]][1]
+    def get_input_expr(self):
+        pass
+    
+    def get_clauses(self):
+        """ need to modify to handle different gate names in other circuits """
+        clauses = self.get_ckt_expr_str().split("&")
+        for index,item in enumerate(clauses):
+            clauses[index] = item.strip()
+            clauses[index] = clauses[index].replace("(","")
+            clauses[index] = clauses[index].replace(")","")
+            clauses[index] = clauses[index].replace("~","-")
+            clauses[index] = clauses[index].replace("|","")
+            clauses[index] = clauses[index].replace("  "," ")
+            clauses[index] = clauses[index].replace("gat","")
+        return clauses
+
+    def write_to_CNF_file(self):
+        num_Vars = len(self.PIs)
+        num_Clasues = len(self.get_clauses())
+        print(num_Vars,num_Clasues)
+
+        file = open("cnf_file","w")
+        file.write("p cnf "+str(num_Vars)+" "+str(num_Clasues)+'\n')
+
+        for clause in self.get_clauses():
+            file.write(clause+" 0\n")
+
+        file.close()
+
+    def get_faulty_expr(self):
+        pass
+
+    def get_xor_CNF_expr(self):
+        pass
+
+    def getSAT(self):
+        pass
+
+    def getTestVector():
+        pass
 
 
 if __name__ == '__main__':
@@ -164,87 +273,21 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
     #ckt.makeCkt("t4_3.ckt")
-    expr_map = {}
-    for gate in ckt.gates:
-        print(gate,ckt.getType(gate),ckt.getInputs(gate))
 
-        if ckt.getType(gate) == 'not':
-
-            in1 = ckt.getInputs(gate)[0]
-            s1 = symbols(in1)
-        
-            str_repr = str(to_cnf( ~s1 ))
-            
-            expr_map[gate] = [to_cnf(~s1)]
-            expr_map[gate].append(str_repr)
-
-        if ckt.getType(gate) == 'nor':
-            inputs = []
-            for Input in ckt.getInputs(gate):
-                if Input in expr_map.keys():
-                    inputs.append(expr_map[Input][0])
-                else:
-                    inputs.append(symbols(Input))
-            
-            expr_map[gate] = [to_cnf(  ~(inputs[0] | inputs[1]), True)]
-            str_repr = str(to_cnf(~(inputs[0] | inputs[1]), True))
-            expr_map[gate].append(str_repr)
-
-        if ckt.getType(gate) == 'nand':
-            inputs = []
-            for Input in ckt.getInputs(gate):
-                if Input in expr_map.keys():
-                    inputs.append(expr_map[Input][0])
-                else:
-                    inputs.append(symbols(Input))
-            
-            expr_map[gate] = [to_cnf(  ~(inputs[0] & inputs[1]), True)]
-            str_repr = str(to_cnf(~(inputs[0] & inputs[1]), True))
-            expr_map[gate].append(str_repr)
-     
-        if ckt.getType(gate) == 'and':
-            inputs = []
-            for Input in ckt.getInputs(gate):
-                if Input in expr_map.keys():
-                    inputs.append(expr_map[Input][0])
-                else:
-                    inputs.append(symbols(Input))
-            
-            expr_map[gate] = [to_cnf(  (inputs[0] & inputs[1]), True)]
-            str_repr = str(to_cnf( (inputs[0] & inputs[1]),True))
-            expr_map[gate].append(str_repr)
-
-        if ckt.getType(gate) == 'or':
-            inputs = []
-            for Input in ckt.getInputs(gate):
-                if Input in expr_map.keys():
-                    inputs.append(expr_map[Input][0])
-                else:
-                    inputs.append(symbols(Input))
-            
-            expr_map[gate] = [to_cnf(  (inputs[0] | inputs[1]), True)]
-            str_repr = str(to_cnf( (inputs[0] | inputs[1]),True))
-            expr_map[gate].append(str_repr)
-            
+    expr_map = ckt.build_Expr_map()
     [print(k,v) for k,v in expr_map.items()]
 
-    POs = ckt.POs
-    expr = expr_map[POs[0]][0]
-    ckt_expr = expr_map[POs[0]][1]
+    ckt_expr = ckt.get_ckt_expr_str()
     print(ckt_expr,type(ckt_expr))
-   
-    clauses = ckt_expr.split("&")
-    for index,item in enumerate(clauses):
-        clauses[index] = item.strip()
-        clauses[index] = clauses[index].replace("(","")
-        clauses[index] = clauses[index].replace(")","")
-        clauses[index] = clauses[index].replace("~","-")
-        clauses[index] = clauses[index].replace("|","")
-        clauses[index] = clauses[index].replace("  "," ")
-        clauses[index] = clauses[index].replace("gat","")
+
+    clauses = ckt.get_clauses()
+    print(clauses)
+
+    ckt.write_to_CNF_file()
+ 
     
-    num_Vars = len(ckt.PIs)
-    num_Clasues = len(clauses)
+    # num_Vars = len(ckt.PIs)
+    # num_Clasues = len(clauses)
 
 
     #! WRITE DATA TO CNF_FILE
@@ -254,7 +297,7 @@ if __name__ == '__main__':
     
 
 
-    print(clauses)
+    #print(clauses)
    
 
     
