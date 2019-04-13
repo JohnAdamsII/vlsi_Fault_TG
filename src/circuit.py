@@ -1,5 +1,10 @@
 from read_Netlist import read_Netlist
-from sympy import to_cnf,symbols
+from sympy import to_cnf,symbols,sympify,Xor
+import os, subprocess
+
+dir_path = os.path.dirname(os.path.realpath(__file__)) #path to file
+parent_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) #path to parent dir of file
+
 
 class circuit:
 
@@ -114,7 +119,7 @@ class circuit:
                 if PI in v:
                     self.gate_values[k][PI] = PI_values[index]
 
-        # assign all outputs afer setting input
+        #! assign all outputs afer setting input
         for gate in self.gates:
             self.assignOutput(gate)
 
@@ -226,8 +231,8 @@ class circuit:
     def get_ckt_expr_str(self):
         """ only works currently if ckt has only one PO """
         return self.expr_map[self.POs[0]][1]
-    def get_input_expr(self):
-        pass
+    def get_expr(self):
+        return self.expr_map[self.POs[0]][0]
     
     def get_clauses(self):
         """ need to modify to handle different gate names in other circuits """
@@ -243,29 +248,45 @@ class circuit:
         return clauses
 
     def write_to_CNF_file(self):
+        """ need to modify to take in expression from get_XOR function """
         num_Vars = len(self.PIs)
         num_Clasues = len(self.get_clauses())
-        print(num_Vars,num_Clasues)
+     
+        with open(os.path.join(parent_dir+'/bin/','cnf_file'), "w") as f:
+            f.write("p cnf "+str(num_Vars)+" "+str(num_Clasues)+'\n')
+            for clause in self.get_clauses():
+                f.write(clause+" 0\n")
+        
+        self.runMiniSAT()
 
-        file = open("cnf_file","w")
-        file.write("p cnf "+str(num_Vars)+" "+str(num_Clasues)+'\n')
+    def runMiniSAT(self):
+        miniSAT_path = parent_dir + '/bin/minisat'
+        cnf_path = parent_dir + '/bin/'
+        runminiSAT = subprocess.call(miniSAT_path +" -verb=0 "+cnf_path+'/cnf_file'+" "+cnf_path+"out.txt", shell=True)
 
-        for clause in self.get_clauses():
-            file.write(clause+" 0\n")
+        self.getSAT()
 
-        file.close()
-
-    def get_faulty_expr(self):
-        pass
-
+   
     def get_xor_CNF_expr(self):
-        pass
+        ff_ckt = self.get_expr()
+        print(ff_ckt)
+        faulty_ckt = ff_ckt.subs("4gat",0)
+        print(faulty_ckt)
+        final_expr = Xor(faulty_ckt,ff_ckt)
+        final_expr = to_cnf(final_expr,simplify=True)
+        print(final_expr)
+
 
     def getSAT(self):
-        pass
+        with open(parent_dir+'/bin/out.txt','r') as f:
+            lines = f.read().splitlines()
+        SAT = True if lines[0] == 'SAT' else False
+        vector = lines[1][:-1].split()
+        print(SAT,vector)
 
-    def getTestVector():
-        pass
+        final_vec = [0 if '-' in x else 1 for x in vector ]
+        if SAT:
+            print("input vector: ",final_vec," will detect fault!")
 
 
 if __name__ == '__main__':
@@ -275,20 +296,22 @@ if __name__ == '__main__':
     #ckt.makeCkt("t4_3.ckt")
 
     expr_map = ckt.build_Expr_map()
-    [print(k,v) for k,v in expr_map.items()]
+    #[print(k,v) for k,v in expr_map.items()]
 
     ckt_expr = ckt.get_ckt_expr_str()
-    print(ckt_expr,type(ckt_expr))
+    #print(ckt_expr,type(ckt_expr))
+
+    output_expr = ckt.get_expr()
+    #print(output_expr)
 
     clauses = ckt.get_clauses()
-    print(clauses)
+    #print(clauses)
 
     ckt.write_to_CNF_file()
- 
-    
-    # num_Vars = len(ckt.PIs)
-    # num_Clasues = len(clauses)
 
+    ckt.get_xor_CNF_expr()
+
+   
 
     #! WRITE DATA TO CNF_FILE
     #! PARSE OUTPUT FOR TEST VECTOR
@@ -296,19 +319,33 @@ if __name__ == '__main__':
     #! XOR WITH CORRECT CIRCUIT
     
 
-
+    fault_list = ckt.getFaultList()
+    #print(fault_list)
     #print(clauses)
-   
-
-    
-
     #print(expr_map)
 
-    #from sympy.abc import A, B
-    #A, B = symbols('A,B')
-    #A = 0
-    #B = 0
-    #print(to_cnf( (A | B) & (A | ~A), True) )
+    #ff_ckt = ckt.get_expr()
+    #print(ff_ckt)
+    #faulty_ckt = to_cnf(ff_ckt.subs("4gat",0),simplify=True)
+    
+    #print(faulty_ckt)
+
+    #final_expr = Xor(faulty_ckt,ff_ckt)
+    #print(final_expr)
+    #final_expr = to_cnf(final_expr,simplify=True)
+    #print(final_expr)
+    #print(sympify(faulty_ckt))
+    #print(to_cnf(faulty_ckt,simplify=True))
+
+
+    #ff_ckt = (A & B) | C
+    #print(ff_ckt)
+    #faulty_ckt = ff_ckt.subs('A',0)
+    #print(faulty_ckt)
+
+    # print(sympify(faulty_expr))
+    # print(to_cnf( Xor(faulty_expr,non_faulty_expr ),True ) )
+    
 
     #ckt.setPIs([0,1,1,'x'])
     #[print(k,v) for k,v in ckt.gate_values.items()]

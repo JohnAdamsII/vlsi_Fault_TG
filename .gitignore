@@ -2,3 +2,5 @@ __pycache__/
 .vscode
 *.out
 *.exe
+bin/cnf_file
+bin/out.txt
