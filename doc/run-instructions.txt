@@ -2,6 +2,7 @@ clone or download repo <LINK> or get from canvas
 run "git submodule update --init --recursive" to pull the boolean set solver
 
 pip3 install sympy
+sudo apt-get install libz-dev
 
 cd to vender/minisat
 run "make config prefix=$PREFIX"
