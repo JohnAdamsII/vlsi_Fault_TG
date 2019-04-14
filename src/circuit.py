@@ -225,6 +225,7 @@ class circuit:
                 self.expr_map[gate] = [to_cnf(  (inputs[0] | inputs[1]), True)]
                 str_repr = str(to_cnf( (inputs[0] | inputs[1]),True))
                 self.expr_map[gate].append(str_repr)
+
         
         return self.expr_map
 
@@ -236,7 +237,8 @@ class circuit:
     
     def get_clauses(self):
         """ need to modify to handle different gate names in other circuits """
-        clauses = self.get_ckt_expr_str().split("&")
+        #clauses = self.get_ckt_expr_str().split("&")
+        clauses = self.get_xor_CNF_expr().split("&")
         for index,item in enumerate(clauses):
             clauses[index] = item.strip()
             clauses[index] = clauses[index].replace("(","")
@@ -269,13 +271,13 @@ class circuit:
    
     def get_xor_CNF_expr(self):
         ff_ckt = self.get_expr()
-        print(ff_ckt)
-        faulty_ckt = ff_ckt.subs("4gat",0)
-        print(faulty_ckt)
+        faulty_ckt = ff_ckt.subs("4gat",0) #! Needs to be obtained from a function that picks a fault from fault list
         final_expr = Xor(faulty_ckt,ff_ckt)
         final_expr = to_cnf(final_expr,simplify=True)
-        print(final_expr)
+        return str(final_expr)
 
+    def get_Fault(self):
+        pass
 
     def getSAT(self):
         with open(parent_dir+'/bin/out.txt','r') as f:
@@ -309,7 +311,9 @@ if __name__ == '__main__':
 
     ckt.write_to_CNF_file()
 
-    ckt.get_xor_CNF_expr()
+    fault_expr =ckt.get_xor_CNF_expr()
+
+    print(fault_expr,type(fault_expr[0]))
 
    
 
