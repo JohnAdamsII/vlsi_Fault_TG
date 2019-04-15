@@ -229,16 +229,86 @@ class circuit:
         
         return self.expr_map
 
+
+
+    def build_non_CNF_Expr_map(self):
+
+        """ Needs to be tested with a ckt with a not gate """
+        for gate in self.gates:
+            if self.getType(gate) == 'not':
+
+                in1 = self.getInputs(gate)[0]
+                s1 = symbols(in1)
+            
+                #str_repr = str(( ~s1 ))
+                
+                self.expr_map[gate] = [(~s1)]
+                self.expr_map[gate].append(str_repr)
+
+            if self.getType(gate) == 'nor':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [ ~(inputs[0] | inputs[1])]
+                #str_repr = str((~(inputs[0] | inputs[1]), True))
+                #self.expr_map[gate].append(str_repr)
+
+            if self.getType(gate) == 'nand':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [ ~(inputs[0] & inputs[1]) ]
+                #str_repr = str((~(inputs[0] & inputs[1]), True))
+                #self.expr_map[gate].append(str_repr)
+        
+            if self.getType(gate) == 'and':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [ (inputs[0] & inputs[1]) ]
+                #str_repr = str(( (inputs[0] & inputs[1]),True))
+                #self.expr_map[gate].append(str_repr)
+
+            if self.getType(gate) == 'or':
+                inputs = []
+                for Input in self.getInputs(gate):
+                    if Input in self.expr_map.keys():
+                        inputs.append(self.expr_map[Input][0])
+                    else:
+                        inputs.append(symbols(Input))
+                
+                self.expr_map[gate] = [  (inputs[0] | inputs[1]) ]
+                #str_repr = str(( (inputs[0] | inputs[1]),True))
+                #self.expr_map[gate].append(str_repr)
+
+        
+        return self.expr_map
+
+
+
+
     def get_ckt_expr_str(self):
         """ only works currently if ckt has only one PO """
         return self.expr_map[self.POs[0]][1]
     def get_expr(self):
         return self.expr_map[self.POs[0]][0]
     
-    def get_clauses(self):
+    def get_clauses(self,gate,stuck_at_value):
         """ need to modify to handle different gate names in other circuits """
         #clauses = self.get_ckt_expr_str().split("&")
-        clauses = self.get_xor_CNF_expr().split("&")
+        clauses = self.get_xor_CNF_expr(gate,stuck_at_value).split("&")
         for index,item in enumerate(clauses):
             clauses[index] = item.strip()
             clauses[index] = clauses[index].replace("(","")
@@ -249,14 +319,16 @@ class circuit:
             clauses[index] = clauses[index].replace("gat","")
         return clauses
 
-    def write_to_CNF_file(self):
+    def write_to_CNF_file(self,gate,stuck_at_value):
         """ need to modify to take in expression from get_XOR function """
+        clauses = self.get_clauses(gate,stuck_at_value)
+
         num_Vars = len(self.PIs)
-        num_Clasues = len(self.get_clauses())
+        num_Clasues = len(clauses)
      
         with open(os.path.join(parent_dir+'/bin/','cnf_file'), "w") as f:
             f.write("p cnf "+str(num_Vars)+" "+str(num_Clasues)+'\n')
-            for clause in self.get_clauses():
+            for clause in clauses:
                 f.write(clause+" 0\n")
         
         self.runMiniSAT()
@@ -269,15 +341,21 @@ class circuit:
         self.getSAT()
 
    
-    def get_xor_CNF_expr(self):
+    def get_xor_CNF_expr(self,gate,stuck_at_value):
         ff_ckt = self.get_expr()
-        faulty_ckt = ff_ckt.subs("4gat",0) #! Needs to be obtained from a function that picks a fault from fault list
+        faulty_ckt = ff_ckt.subs(gate,stuck_at_value)
+        #print("Fault free ckt is :",ff_ckt)
+        #faulty_ckt = ff_ckt.subs("3gat",0) #! Needs to be obtained from a function that picks a fault from fault list
+        #print("faulty ckt is : ",faulty_ckt)
         final_expr = Xor(faulty_ckt,ff_ckt)
         final_expr = to_cnf(final_expr,simplify=True)
         return str(final_expr)
 
-    def get_Fault(self):
-        pass
+    def get_Faulty_ckt(self,gate,stuck_at_value):
+        ff_ckt = self.get_expr()
+        return ff_ckt.subs(gate,stuck_at_value)
+    
+        
 
     def getSAT(self):
         with open(parent_dir+'/bin/out.txt','r') as f:
@@ -289,6 +367,8 @@ class circuit:
         final_vec = [0 if '-' in x else 1 for x in vector ]
         if SAT:
             print("input vector: ",final_vec," will detect fault!")
+        else:
+            print("Fault is undetectable! that suckkkkkkkkkks")
 
 
 if __name__ == '__main__':
@@ -297,23 +377,41 @@ if __name__ == '__main__':
     ckt.makeCkt("t4_21.ckt")
     #ckt.makeCkt("t4_3.ckt")
 
-    expr_map = ckt.build_Expr_map()
-    #[print(k,v) for k,v in expr_map.items()]
+    # expr_map = ckt.build_Expr_map()
+    # [print(k,v) for k,v in expr_map.items()]
 
-    ckt_expr = ckt.get_ckt_expr_str()
+    non_cnf_map = ckt.build_non_CNF_Expr_map()
+    [print(k,v) for k,v in non_cnf_map.items()]
+
+    final_expr = non_cnf_map["9gat"][0]
+    print(final_expr, type(final_expr))
+    new_expr = final_expr.subs('3gat',0)
+    print(new_expr)
+
+    #! get the expr with inner wires for the expr map
+    #! them compare and insert faults for inner wires by
+    #! subbing in the innner wire and the fault value
+
+    #[print(k,v) for k,v in ckt.gate_values.items()]
+
+
+
+
+
+    #ckt_expr = ckt.get_ckt_expr_str()
     #print(ckt_expr,type(ckt_expr))
 
-    output_expr = ckt.get_expr()
+    #output_expr = ckt.get_expr()
     #print(output_expr)
 
-    clauses = ckt.get_clauses()
+    #clauses = ckt.get_clauses()
     #print(clauses)
 
-    ckt.write_to_CNF_file()
+    #ckt.write_to_CNF_file("7gat",1)
 
-    fault_expr =ckt.get_xor_CNF_expr()
+    #fault_expr =ckt.get_xor_CNF_expr()
 
-    print(fault_expr,type(fault_expr[0]))
+    #print(fault_expr,type(fault_expr[0]))
 
    
 
@@ -325,6 +423,14 @@ if __name__ == '__main__':
 
     fault_list = ckt.getFaultList()
     #print(fault_list)
+    # for fault in fault_list:
+    #     myfault = fault.split('-')
+    #     gate = myfault[0]
+    #     stuck_at_value = myfault[1]
+    #     print(gate,stuck_at_value)
+    #     ckt.write_to_CNF_file(gate,stuck_at_value)
+    #     print("********************************************************************\n")
+    # #print(fault_list)
     #print(clauses)
     #print(expr_map)
 
