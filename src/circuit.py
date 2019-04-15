@@ -232,13 +232,13 @@ class circuit:
 
 
 
-    def get_faulty_Expr(self):
+    def get_faulty_Expr(self,stuck_at_value=""):
         
         """ Needs to be tested with a ckt with a not gate """
         for gate in self.gates:
             if gate in self.fault_exp_map.keys():
-                    print("setting fault for ",gate,"stuck at ",0)
-                    self.fault_exp_map[gate] = 0 #! this needs to change!!!
+                    print(gate," stuck at ",stuck_at_value)
+                    self.fault_exp_map[gate] = stuck_at_value #! this needs to change!!!
                     continue
             if self.getType(gate) == 'not':
 
@@ -300,7 +300,7 @@ class circuit:
     def get_clauses(self,gate,stuck_at_value):
         """ need to modify to handle different gate names in other circuits """
         self.fault_exp_map[gate]= stuck_at_value #set fault
-        faulty_expr = ckt.get_faulty_Expr() #get fault expression
+        faulty_expr = self.get_faulty_Expr(stuck_at_value) #get fault expression
         print("faulty expression is: ",faulty_expr)
         self.fault_exp_map = {} #reset map
         ff_ckt = self.get_faulty_Expr() #get free faulty circuit
@@ -318,7 +318,7 @@ class circuit:
             clauses[index] = clauses[index].replace("~","-")
             clauses[index] = clauses[index].replace("|","")
             clauses[index] = clauses[index].replace("  "," ")
-            clauses[index] = clauses[index].replace("gat","")
+            clauses[index] = clauses[index].replace("gat","") #! THIS WILL BREAK WITH DIFFERENT GATE NAMES!
         return clauses
 
     def write_to_CNF_file(self,gate,stuck_at_value):
@@ -375,147 +375,31 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
 
-
     # fault_list = ckt.getFaultList()
-    # #print(fault_list)
     # for fault in fault_list:
     #     myfault = fault.split('-')
     #     gate = myfault[0]
     #     stuck_at_value = myfault[1]
     #     print(gate,stuck_at_value)
-    #     ckt.write_to_CNF_file(gate,stuck_at_value)
+    #     ckt.write_to_CNF_file(symbols(gate),stuck_at_value)
+    #     ckt.fault_exp_map = {}
     
+    #!  MARY PLEASE TEST THIS!!!!!!
+    ckt.write_to_CNF_file("6gat",1) #! WORKS (MARY SAID)
+    ckt.fault_exp_map = {}
+    ckt.write_to_CNF_file("4gat",0) #! WORKS (MARY SAID)
+    ckt.fault_exp_map = {}
+    ckt.write_to_CNF_file("1gat",0) #! WORKS (MARY SAID)
+    ckt.fault_exp_map = {}
+    ckt.write_to_CNF_file("9gat",0)
+    ckt.fault_exp_map = {}
+    ckt.write_to_CNF_file("8gat",1)
+    ckt.fault_exp_map = {}
     ckt.write_to_CNF_file("7gat",1)
-    #ckt.write_to_CNF_file("4gat",0)
-    #ckt.makeCkt("t4_3.ckt")
+    ckt.fault_exp_map = {}
+    ckt.write_to_CNF_file("7gat",0)
+    ckt.fault_exp_map = {}
+    ckt.write_to_CNF_file("6gat",0)
+    ckt.fault_exp_map = {}
 
-    # expr_map = ckt.build_Expr_map()
-    # [print(k,v) for k,v in expr_map.items()]
-
-    #! try setting intermeidaite before!! eg non_cnf_map['3gat'] = 0
-    # ckt.fault_exp_map['7gat']= 0 #set fault
-    # faulty_expr = ckt.get_faulty_Expr() #get fault expression
-    # ckt.fault_exp_map = {} #reset map
-    # ff_ckt = ckt.get_faulty_Expr() #get free faulty circuit
-    # xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
-    # xor_expr = to_cnf(xor_expr,simplify=True) #get xor expr in CNF
-    # print(xor_expr)
-
-
-
-    #[print(k,v) for k,v in non_cnf_map.items()]
-    #final_expr = non_cnf_map["9gat"][0]
-    print("********************************")
-    # expr1 = non_cnf_map['6gat'][0]
-    # print(expr1)
-    # expr2 = non_cnf_map['8gat'][0]
-    # print(expr2)
-
-    #dif_map = ckt.build_dif_Expr_map()
-    #[print(k,v) for k,v in dif_map.items()]
-  
-    #final_expr = non_cnf_map['6gat'][0] | non_cnf_map['8gat'][0]
-    #print(final_expr)
-    #final_expr = non_cnf_map["9gat"][0]
-
-
-
-
-
-    #print(final_expr, type(final_expr))
-    #non_cnf_map['7gat'] = 0
-    #target = non_cnf_map['8gat']
-    #print(target)
-    #print(target[0].subs('3gat',0))
-    #[print(k,v) for k,v in non_cnf_map.items()]
-    #new_expr = final_expr.subs('3gat',0)
-    #print(new_expr)
-
-    #! get the expr with inner wires for the expr map
-    #! them compare and insert faults for inner wires by
-    #! subbing in the innner wire and the fault value
-
-    #[print(k,v) for k,v in ckt.gate_values.items()]
-    #[print(k,v) for k,v in ckt.gate_map.items()]
-
-
-
-
-
-
-    #ckt_expr = ckt.get_ckt_expr_str()
-    #print(ckt_expr,type(ckt_expr))
-
-    #output_expr = ckt.get_expr()
-    #print(output_expr)
-
-    #clauses = ckt.get_clauses()
-    #print(clauses)
-
-    #ckt.write_to_CNF_file("7gat",1)
-
-    #fault_expr =ckt.get_xor_CNF_expr()
-
-    #print(fault_expr,type(fault_expr[0]))
-
-   
-
-    #! WRITE DATA TO CNF_FILE
-    #! PARSE OUTPUT FOR TEST VECTOR
-    #! GET FAULT CIRCUIT EXPR
-    #! XOR WITH CORRECT CIRCUIT
-    
-
-    #fault_list = ckt.getFaultList()
-    #print(fault_list)
-    # for fault in fault_list:
-    #     myfault = fault.split('-')
-    #     gate = myfault[0]
-    #     stuck_at_value = myfault[1]
-    #     print(gate,stuck_at_value)
-    #     ckt.write_to_CNF_file(gate,stuck_at_value)
-    #     print("********************************************************************\n")
-    # #print(fault_list)
-    #print(clauses)
-    #print(expr_map)
-
-    #ff_ckt = ckt.get_expr()
-    #print(ff_ckt)
-    #faulty_ckt = to_cnf(ff_ckt.subs("4gat",0),simplify=True)
-    
-    #print(faulty_ckt)
-
-    #final_expr = Xor(faulty_ckt,ff_ckt)
-    #print(final_expr)
-    #final_expr = to_cnf(final_expr,simplify=True)
-    #print(final_expr)
-    #print(sympify(faulty_ckt))
-    #print(to_cnf(faulty_ckt,simplify=True))
-
-
-    #ff_ckt = (A & B) | C
-    #print(ff_ckt)
-    #faulty_ckt = ff_ckt.subs('A',0)
-    #print(faulty_ckt)
-
-    # print(sympify(faulty_expr))
-    # print(to_cnf( Xor(faulty_expr,non_faulty_expr ),True ) )
-    
-
-    #ckt.setPIs([0,1,1,'x'])
-    #[print(k,v) for k,v in ckt.gate_values.items()]
-
-    # ckt.setPIs([1,1,1,1])
-    # [print(k,v) for k,v in ckt.gate_values.items()]
-
-
-    # fault_list = ckt.getFaultList()
-    # print(fault_list)
-
-    # collapsed_fault_list = ckt.collapseFaults()
-    # print(collapsed_fault_list)
- 
-    #[print(k,v) for k,v in ckt.gate_values.items()]
-
-    # for k,v in ckt.gate_map.items():
-    # print(k,v)
+    #!  MARY PLEASE TEST THIS!!!!!!
