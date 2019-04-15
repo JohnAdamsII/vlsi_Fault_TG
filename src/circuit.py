@@ -10,6 +10,7 @@ class circuit:
 
     gate_map = {}
     expr_map = {}
+    fault_exp_map = {}
     gate_values = {}
     fault_list = []
     collapsed_fault_list = []
@@ -231,72 +232,63 @@ class circuit:
 
 
 
-    def build_non_CNF_Expr_map(self):
-
+    def get_faulty_Expr(self):
+        
         """ Needs to be tested with a ckt with a not gate """
         for gate in self.gates:
+            if gate in self.fault_exp_map.keys():
+                    print("setting fault for ",gate,"stuck at ",0)
+                    self.fault_exp_map[gate] = 0 #! this needs to change!!!
+                    continue
             if self.getType(gate) == 'not':
 
                 in1 = self.getInputs(gate)[0]
                 s1 = symbols(in1)
-            
-                #str_repr = str(( ~s1 ))
                 
-                self.expr_map[gate] = [(~s1)]
-                self.expr_map[gate].append(str_repr)
+                self.fault_exp_map[gate] = [(~s1)]
+                self.fault_exp_map[gate].append(str_repr)
 
             if self.getType(gate) == 'nor':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
+                    if Input in self.fault_exp_map.keys():
+                        inputs.append(self.fault_exp_map[Input])
                     else:
                         inputs.append(symbols(Input))
                 
-                self.expr_map[gate] = [ ~(inputs[0] | inputs[1])]
-                #str_repr = str((~(inputs[0] | inputs[1]), True))
-                #self.expr_map[gate].append(str_repr)
+                self.fault_exp_map[gate] = ~(inputs[0] | inputs[1])
 
             if self.getType(gate) == 'nand':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
+                    if Input in self.fault_exp_map.keys():
+                        inputs.append(self.fault_exp_map[Input][0])
                     else:
                         inputs.append(symbols(Input))
                 
-                self.expr_map[gate] = [ ~(inputs[0] & inputs[1]) ]
-                #str_repr = str((~(inputs[0] & inputs[1]), True))
-                #self.expr_map[gate].append(str_repr)
-        
+                self.fault_exp_map[gate] = ~(inputs[0] & inputs[1])
+               
             if self.getType(gate) == 'and':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
+                    if Input in self.fault_exp_map.keys():
+                        inputs.append(self.fault_exp_map[Input])
                     else:
                         inputs.append(symbols(Input))
                 
-                self.expr_map[gate] = [ (inputs[0] & inputs[1]) ]
-                #str_repr = str(( (inputs[0] & inputs[1]),True))
-                #self.expr_map[gate].append(str_repr)
-
+                self.fault_exp_map[gate] = (inputs[0] & inputs[1])
+              
             if self.getType(gate) == 'or':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
+                    if Input in self.fault_exp_map.keys():
+                        inputs.append(self.fault_exp_map[Input])
                     else:
                         inputs.append(symbols(Input))
                 
-                self.expr_map[gate] = [  (inputs[0] | inputs[1]) ]
-                #str_repr = str(( (inputs[0] | inputs[1]),True))
-                #self.expr_map[gate].append(str_repr)
+                self.fault_exp_map[gate] = (inputs[0] | inputs[1])
 
-        
-        return self.expr_map
-
-
+        return self.fault_exp_map[self.POs[0]] #! ONLY WORKS WITH ONE PO right now
 
 
     def get_ckt_expr_str(self):
@@ -307,8 +299,18 @@ class circuit:
     
     def get_clauses(self,gate,stuck_at_value):
         """ need to modify to handle different gate names in other circuits """
-        #clauses = self.get_ckt_expr_str().split("&")
-        clauses = self.get_xor_CNF_expr(gate,stuck_at_value).split("&")
+        self.fault_exp_map[gate]= stuck_at_value #set fault
+        faulty_expr = ckt.get_faulty_Expr() #get fault expression
+        print("faulty expression is: ",faulty_expr)
+        self.fault_exp_map = {} #reset map
+        ff_ckt = self.get_faulty_Expr() #get free faulty circuit
+        print("fault free expression is: ",ff_ckt)
+        
+        xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
+        xor_expr = to_cnf(xor_expr,simplify=True) #get xor expr in CNF
+       
+        clauses = str(xor_expr).split("&")
+
         for index,item in enumerate(clauses):
             clauses[index] = item.strip()
             clauses[index] = clauses[index].replace("(","")
@@ -344,9 +346,6 @@ class circuit:
     def get_xor_CNF_expr(self,gate,stuck_at_value):
         ff_ckt = self.get_expr()
         faulty_ckt = ff_ckt.subs(gate,stuck_at_value)
-        #print("Fault free ckt is :",ff_ckt)
-        #faulty_ckt = ff_ckt.subs("3gat",0) #! Needs to be obtained from a function that picks a fault from fault list
-        #print("faulty ckt is : ",faulty_ckt)
         final_expr = Xor(faulty_ckt,ff_ckt)
         final_expr = to_cnf(final_expr,simplify=True)
         return str(final_expr)
@@ -375,24 +374,70 @@ if __name__ == '__main__':
 
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
+
+
+    # fault_list = ckt.getFaultList()
+    # #print(fault_list)
+    # for fault in fault_list:
+    #     myfault = fault.split('-')
+    #     gate = myfault[0]
+    #     stuck_at_value = myfault[1]
+    #     print(gate,stuck_at_value)
+    #     ckt.write_to_CNF_file(gate,stuck_at_value)
+    
+    ckt.write_to_CNF_file("7gat",1)
+    #ckt.write_to_CNF_file("4gat",0)
     #ckt.makeCkt("t4_3.ckt")
 
     # expr_map = ckt.build_Expr_map()
     # [print(k,v) for k,v in expr_map.items()]
 
-    non_cnf_map = ckt.build_non_CNF_Expr_map()
-    [print(k,v) for k,v in non_cnf_map.items()]
+    #! try setting intermeidaite before!! eg non_cnf_map['3gat'] = 0
+    # ckt.fault_exp_map['7gat']= 0 #set fault
+    # faulty_expr = ckt.get_faulty_Expr() #get fault expression
+    # ckt.fault_exp_map = {} #reset map
+    # ff_ckt = ckt.get_faulty_Expr() #get free faulty circuit
+    # xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
+    # xor_expr = to_cnf(xor_expr,simplify=True) #get xor expr in CNF
+    # print(xor_expr)
 
-    final_expr = non_cnf_map["9gat"][0]
-    print(final_expr, type(final_expr))
-    new_expr = final_expr.subs('3gat',0)
-    print(new_expr)
+
+
+    #[print(k,v) for k,v in non_cnf_map.items()]
+    #final_expr = non_cnf_map["9gat"][0]
+    print("********************************")
+    # expr1 = non_cnf_map['6gat'][0]
+    # print(expr1)
+    # expr2 = non_cnf_map['8gat'][0]
+    # print(expr2)
+
+    #dif_map = ckt.build_dif_Expr_map()
+    #[print(k,v) for k,v in dif_map.items()]
+  
+    #final_expr = non_cnf_map['6gat'][0] | non_cnf_map['8gat'][0]
+    #print(final_expr)
+    #final_expr = non_cnf_map["9gat"][0]
+
+
+
+
+
+    #print(final_expr, type(final_expr))
+    #non_cnf_map['7gat'] = 0
+    #target = non_cnf_map['8gat']
+    #print(target)
+    #print(target[0].subs('3gat',0))
+    #[print(k,v) for k,v in non_cnf_map.items()]
+    #new_expr = final_expr.subs('3gat',0)
+    #print(new_expr)
 
     #! get the expr with inner wires for the expr map
     #! them compare and insert faults for inner wires by
     #! subbing in the innner wire and the fault value
 
     #[print(k,v) for k,v in ckt.gate_values.items()]
+    #[print(k,v) for k,v in ckt.gate_map.items()]
+
 
 
 
@@ -421,7 +466,7 @@ if __name__ == '__main__':
     #! XOR WITH CORRECT CIRCUIT
     
 
-    fault_list = ckt.getFaultList()
+    #fault_list = ckt.getFaultList()
     #print(fault_list)
     # for fault in fault_list:
     #     myfault = fault.split('-')
