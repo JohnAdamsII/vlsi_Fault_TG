@@ -308,6 +308,7 @@ class circuit:
         
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
         xor_expr = to_cnf(xor_expr,simplify=True) #get xor expr in CNF
+        print("faulty XOR fault_free = ",xor_expr)
        
         clauses = str(xor_expr).split("&")
 
@@ -401,5 +402,4 @@ if __name__ == '__main__':
     ckt.fault_exp_map = {}
     ckt.write_to_CNF_file("6gat",0)
     ckt.fault_exp_map = {}
-
     #!  MARY PLEASE TEST THIS!!!!!!
