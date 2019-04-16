@@ -152,7 +152,8 @@ class circuit:
             if dom:
                 fault_set.update((dom[1], dom[2]))
 
-        self.collapsed_fault_list = sorted(fault_set, key=lambda x: x[0][0])
+        self.collapsed_fault_list = sorted(fault_set, key=lambda x: x[0][0]) #! This may break with different circuit names
+        print("\nFault list after collapsing: ")
         return self.collapsed_fault_list
 
     def func_eq(self, gate):

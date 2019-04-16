@@ -14,39 +14,45 @@ def main():
         5: "[5] Exit"
     }
     
-    print('\n')
-    [print(x) for x in menu.values()]
-    print('\n')
-    
+  
     ckt_read = False
+    collapsed = False
 
     while(True):
-        num = int(input("Enter a number from 0 to 5: "))
+        print('\n')
+        [print(x) for x in menu.values()]
+        print('\n')
 
-        if num == 0:
+        num = input("Enter a number from 0 to 5: ")
+
+        if num == "0":
             ckt_file = benchmarkrunner()
             ckt_read = True
-        elif num == 1:
+        elif num == "1":
             if ckt_read:
                 ckt = circuit()
                 ckt.makeCkt(ckt_file)
-                print("Fault Universe after collapsing: ")
-                print(ckt.collapseFaults())
+                collapsed_fault_list = ckt.collapseFaults()
+                print(collapsed_fault_list)
+                collapsed = True
             else:
                 print("Please read in netlist first")
-        elif num == 2:
-            if ckt_read:
+        elif num == "2":
+            if ckt_read and not(collapsed):
                 ckt = circuit()
                 ckt.makeCkt(ckt_file)
                 print("All SSFs before collapsing: ")
-                print(ckt.getFaultList())
+                [print(x) for x in ckt.getFaultList()]
+            elif ckt_read and collapsed:
+                print("Collapsed fault list: ")
+                print(collapsed_fault_list)
             else:
                 print("Please read in netlist first")
-        elif num == 3:
+        elif num == "3":
             pass
             #! D algorithmn goes here
             pass
-        elif num == 4:
+        elif num == "4":
             try:
                 compilecppcode = subprocess.call("g++" + " main.cpp", shell=True)
                 if compilecppcode < 0:
@@ -57,7 +63,7 @@ def main():
                 print("Compilation failed:", e, file=sys.stderr)
 
             runexe = subprocess.call("./a.out", shell=True)
-        elif num == 5:
+        elif num == "5":
             sys.exit(0)
         else:
             print("Invalid input!")
