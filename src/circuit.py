@@ -137,6 +137,7 @@ class circuit:
     def collapseFaults(self):
         fault_set = set()
         for gate in self.gates:
+            #! add support for not gates here
             eq = self.func_eq(gate)
             print("functionally equivalent faults: ","{"+str(eq[0])+","+str(eq[1])+","+str(eq[2])+"}")
             print(str(eq[1])+","+str(eq[2])+" will be removed from fault list")
@@ -159,7 +160,7 @@ class circuit:
     def func_eq(self, gate):
         #* input s-a-c faults and the output s-a-(c XOR i) are functionally equivalent.
         if self.getType(gate) == 'not':
-            return None
+            return None #! add support for not gates here
         else:
             inputs = self.getInputs(gate)
             return (str(gate)+"-"+str(self.cXORi(gate)), inputs[0]+'-'+str(self.c(gate)), inputs[1]+'-'+str(self.c(gate)))
@@ -254,8 +255,7 @@ class circuit:
                 in1 = self.getInputs(gate)[0]
                 s1 = symbols(in1)
                 
-                self.fault_exp_map[gate] = [(~s1)]
-                self.fault_exp_map[gate].append(str_repr)
+                self.fault_exp_map[gate] = ~s1
 
             if self.getType(gate) == 'nor':
                 inputs = []
@@ -307,7 +307,9 @@ class circuit:
         return self.expr_map[self.POs[0]][0]
     
     def get_clauses(self,gate,stuck_at_value):
-        """ need to modify to handle different gate names in other circuits """
+        """ formats circuit expressions into clauses to write to CNF file for set solving
+        need to be modify to handle different gate names in other circuits """
+        
         self.fault_exp_map[gate]= stuck_at_value #set fault
         faulty_expr = self.get_faulty_Expr(stuck_at_value) #get fault expression
         print("faulty expression is: ",faulty_expr)
@@ -332,7 +334,8 @@ class circuit:
         return clauses
 
     def write_to_CNF_file(self,gate,stuck_at_value):
-        """ need to modify to take in expression from get_XOR function """
+        """ writes clauses to CNF file and calls miniSAT """
+
         clauses = self.get_clauses(gate,stuck_at_value)
 
         num_Vars = len(self.PIs)
@@ -346,28 +349,32 @@ class circuit:
         return self.runMiniSAT()
 
     def runMiniSAT(self):
+        """ sends cnf file with written clauses to miniSAT solver"""
+
         miniSAT_path = parent_dir + '/bin/minisat'
         cnf_path = parent_dir + '/bin/'
         runminiSAT = subprocess.call(miniSAT_path +" -verb=0 "+cnf_path+'/cnf_file'+" "+cnf_path+"out.txt", shell=True)
-
         return self.getSAT()
 
         
    
-    def get_xor_CNF_expr(self,gate,stuck_at_value):
-        ff_ckt = self.get_expr()
-        faulty_ckt = ff_ckt.subs(gate,stuck_at_value)
-        final_expr = Xor(faulty_ckt,ff_ckt)
-        final_expr = to_cnf(final_expr,simplify=True)
-        return str(final_expr)
+    # def get_xor_CNF_expr(self,gate,stuck_at_value):
+    #     ff_ckt = self.get_expr()
+    #     faulty_ckt = ff_ckt.subs(gate,stuck_at_value)
+    #     final_expr = Xor(faulty_ckt,ff_ckt)
+    #     final_expr = to_cnf(final_expr,simplify=True)
+    #     return str(final_expr)
 
-    def get_Faulty_ckt(self,gate,stuck_at_value):
-        ff_ckt = self.get_expr()
-        return ff_ckt.subs(gate,stuck_at_value)
+    # def get_Faulty_ckt(self,gate,stuck_at_value):
+    #     ff_ckt = self.get_expr()
+    #     return ff_ckt.subs(gate,stuck_at_value)
     
         
 
     def getSAT(self):
+        """ read output of set solver and return if expression is SAT 
+        and what vector makes expression true if any  """
+
         with open(parent_dir+'/bin/out.txt','r') as f:
             lines = f.read().splitlines()
         SAT = True if lines[0] == 'SAT' else False
@@ -378,7 +385,7 @@ class circuit:
         if SAT:
             print("input vector: ",final_vec," will detect fault!")
         else:
-            print("Fault is undetectable! that suckkkkkkkkkks")
+            print("Fault is undetectable!")
 
         return (SAT,final_vec)
 
@@ -388,47 +395,36 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
 
-    fault_list = ckt.getFaultList()
-    #print(fault_list)
-    print(ckt.collapseFaults())
-    # for fault in fault_list:
-    #     myfault = fault.split('-')
-    #     gate = myfault[0]
-    #     stuck_at_value = myfault[1]
-    #     print(gate,stuck_at_value)
-    #     ckt.write_to_CNF_file(symbols(gate),stuck_at_value)
-    #     ckt.fault_exp_map = {}
-    
     #!  MARY PLEASE TEST THIS!!!!!!
-    # test_vec = ckt.write_to_CNF_file("6gat",1)[1] #! WORKS (MARY SAID)
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
-    # print("***************************************************")
-    # test_vec = ckt.write_to_CNF_file("4gat",0)[1] #! WORKS (MARY SAID)
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
-    # print("***************************************************")
-    # test_vec = ckt.write_to_CNF_file("1gat",0)[1] #! WORKS (MARY SAID)
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
-    # print("***************************************************")
-    # test_vec = ckt.write_to_CNF_file("9gat",0)[1]
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
-    # print("***************************************************")
-    # test_vec = ckt.write_to_CNF_file("8gat",1)[1]
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
-    # print("***************************************************")
-    # test_vec = ckt.write_to_CNF_file("7gat",1)[1]
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
-    # print("***************************************************")
-    # test_vec = ckt.write_to_CNF_file("7gat",0)[1]
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
-    # print("***************************************************")
-    # test_vec = ckt.write_to_CNF_file("6gat",0)[1]
-    # print("TEST VECT IS: ",test_vec)
-    # ckt.fault_exp_map = {}
+    test_vec = ckt.write_to_CNF_file("6gat",1)[1] #! WORKS (MARY SAID)
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("4gat",0)[1] #! WORKS (MARY SAID)
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("1gat",0)[1] #! WORKS (MARY SAID)
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("9gat",0)[1]
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("8gat",1)[1]
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("7gat",1)[1]
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("7gat",0)[1]
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("6gat",0)[1]
+    print("TEST VECT IS: ",test_vec)
+    ckt.fault_exp_map = {}
     #!  MARY PLEASE TEST THIS!!!!!!
