@@ -334,15 +334,16 @@ class circuit:
             for clause in clauses:
                 f.write(clause+" 0\n")
         
-        self.runMiniSAT()
+        return self.runMiniSAT()
 
     def runMiniSAT(self):
         miniSAT_path = parent_dir + '/bin/minisat'
         cnf_path = parent_dir + '/bin/'
         runminiSAT = subprocess.call(miniSAT_path +" -verb=0 "+cnf_path+'/cnf_file'+" "+cnf_path+"out.txt", shell=True)
 
-        self.getSAT()
+        return self.getSAT()
 
+        
    
     def get_xor_CNF_expr(self,gate,stuck_at_value):
         ff_ckt = self.get_expr()
@@ -370,6 +371,8 @@ class circuit:
         else:
             print("Fault is undetectable! that suckkkkkkkkkks")
 
+        return (SAT,final_vec)
+
 
 if __name__ == '__main__':
 
@@ -386,20 +389,35 @@ if __name__ == '__main__':
     #     ckt.fault_exp_map = {}
     
     #!  MARY PLEASE TEST THIS!!!!!!
-    ckt.write_to_CNF_file("6gat",1) #! WORKS (MARY SAID)
+    test_vec = ckt.write_to_CNF_file("6gat",1)[1] #! WORKS (MARY SAID)
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
-    ckt.write_to_CNF_file("4gat",0) #! WORKS (MARY SAID)
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("4gat",0)[1] #! WORKS (MARY SAID)
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
-    ckt.write_to_CNF_file("1gat",0) #! WORKS (MARY SAID)
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("1gat",0)[1] #! WORKS (MARY SAID)
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
-    ckt.write_to_CNF_file("9gat",0)
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("9gat",0)[1]
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
-    ckt.write_to_CNF_file("8gat",1)
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("8gat",1)[1]
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
-    ckt.write_to_CNF_file("7gat",1)
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("7gat",1)[1]
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
-    ckt.write_to_CNF_file("7gat",0)
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("7gat",0)[1]
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
-    ckt.write_to_CNF_file("6gat",0)
+    print("***************************************************")
+    test_vec = ckt.write_to_CNF_file("6gat",0)[1]
+    print("TEST VECT IS: ",test_vec)
     ckt.fault_exp_map = {}
     #!  MARY PLEASE TEST THIS!!!!!!

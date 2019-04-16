@@ -6,21 +6,19 @@ parent_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) #path to parent 
 src_path = parent_dir+'/src/'
 sys.path.insert(0,src_path)
 
-import circuit
+from circuit import circuit
 
 #unit test docs https://docs.python.org/3/library/unittest.html#unittest.TestCase.debug
 #run on terminal with python -m unittest test_circuit.py
 #or if unittest.main() (see below) to just run python3 test_circuit.py
 
-class TestCalc(unittest.TestCase):
+class test_circuit(unittest.TestCase):
 
-    def test_SetPIs(self):
-        """  Test cases go here """
-        pass
-        #self.assertEqual(ckt.SetPIs([1,1,1,1]), CORRECT OUTPUT HERE)
-    
-    def test_collapseFaults(self):
-        pass
+    def test_write_to_CNF_file(self):
+        ckt = circuit()
+        ckt.makeCkt("t4_21.ckt")
+        self.assertEqual(ckt.write_to_CNF_file("4gat",0)[1], [0,0,1,1,0])
+        ckt.fault_exp_map = {}
 
 
 
