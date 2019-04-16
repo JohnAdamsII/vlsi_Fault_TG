@@ -138,11 +138,17 @@ class circuit:
         fault_set = set()
         for gate in self.gates:
             eq = self.func_eq(gate)
+            print("functionally equivalent faults: ","{"+str(eq[0])+","+str(eq[1])+","+str(eq[2])+"}")
+            print(str(eq[1])+","+str(eq[2])+" will be removed from fault list")
             if eq:
                 fault_set.add(eq[0])
-                    
+
+        print("\ndominating relationship such that f dominates g (f,g)") 
+        print("f will be removed from fault list")         
         for gate in self.gates:
             dom = self.dom(gate)
+            print("("+dom[0]+","+dom[1]+")")
+            print("("+dom[0]+","+dom[2]+")")
             if dom:
                 fault_set.update((dom[1], dom[2]))
 
@@ -150,6 +156,7 @@ class circuit:
         return self.collapsed_fault_list
 
     def func_eq(self, gate):
+        #* input s-a-c faults and the output s-a-(c XOR i) are functionally equivalent.
         if self.getType(gate) == 'not':
             return None
         else:
@@ -157,6 +164,7 @@ class circuit:
             return (str(gate)+"-"+str(self.cXORi(gate)), inputs[0]+'-'+str(self.c(gate)), inputs[1]+'-'+str(self.c(gate)))
 
     def dom(self, gate):
+        #* the output s-a-(C' XOR i) fault dominates any input s-a-c'
         if self.getType(gate) == 'not':
             return None
         else:
@@ -379,7 +387,9 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
 
-    # fault_list = ckt.getFaultList()
+    fault_list = ckt.getFaultList()
+    #print(fault_list)
+    print(ckt.collapseFaults())
     # for fault in fault_list:
     #     myfault = fault.split('-')
     #     gate = myfault[0]
@@ -389,35 +399,35 @@ if __name__ == '__main__':
     #     ckt.fault_exp_map = {}
     
     #!  MARY PLEASE TEST THIS!!!!!!
-    test_vec = ckt.write_to_CNF_file("6gat",1)[1] #! WORKS (MARY SAID)
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("4gat",0)[1] #! WORKS (MARY SAID)
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("1gat",0)[1] #! WORKS (MARY SAID)
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("9gat",0)[1]
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("8gat",1)[1]
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("7gat",1)[1]
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("7gat",0)[1]
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("6gat",0)[1]
-    print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
+    # test_vec = ckt.write_to_CNF_file("6gat",1)[1] #! WORKS (MARY SAID)
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
+    # print("***************************************************")
+    # test_vec = ckt.write_to_CNF_file("4gat",0)[1] #! WORKS (MARY SAID)
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
+    # print("***************************************************")
+    # test_vec = ckt.write_to_CNF_file("1gat",0)[1] #! WORKS (MARY SAID)
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
+    # print("***************************************************")
+    # test_vec = ckt.write_to_CNF_file("9gat",0)[1]
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
+    # print("***************************************************")
+    # test_vec = ckt.write_to_CNF_file("8gat",1)[1]
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
+    # print("***************************************************")
+    # test_vec = ckt.write_to_CNF_file("7gat",1)[1]
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
+    # print("***************************************************")
+    # test_vec = ckt.write_to_CNF_file("7gat",0)[1]
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
+    # print("***************************************************")
+    # test_vec = ckt.write_to_CNF_file("6gat",0)[1]
+    # print("TEST VECT IS: ",test_vec)
+    # ckt.fault_exp_map = {}
     #!  MARY PLEASE TEST THIS!!!!!!
