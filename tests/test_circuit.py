@@ -17,9 +17,31 @@ class test_circuit(unittest.TestCase):
     def test_write_to_CNF_file(self):
         ckt = circuit()
         ckt.makeCkt("t4_21.ckt")
-        self.assertEqual(ckt.write_to_CNF_file("4gat",0)[1], [0,0,1,1,0])
-        ckt.fault_exp_map = {}
+        print ("----------------------------------------\n========================================")
 
+        self.assertEqual(ckt.write_to_CNF_file("10gat",0)[1], [1,1,0,0,0])
+        ckt.fault_exp_map = {}
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("10gat",1)[1], [0,0,0,0,0])
+        ckt.fault_exp_map = {}
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("8gat",0)[1], [1,0,1,0,1])
+        ckt.fault_exp_map = {}
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("8gat",1)[1], [1,1,0,0,0])
+        ckt.fault_exp_map = {}
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("7gat",0)[1], [0,0,1,1,0])
+        ckt.fault_exp_map = {}
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("7gat",1)[1], [1,1,0,0,0])
+        ckt.fault_exp_map = {}
+        print ("----------------------------------------\n========================================")
 
 
 if __name__ == '__main__':
