@@ -242,7 +242,7 @@ class circuit:
 
 
 
-    def get_faulty_Expr(self,stuck_at_value=""):
+    def get_faulty_Expr(self,stuck_at_value="",fanouts=[]):
         
         """ Needs to be tested with a ckt with a not gate """
         for gate in self.gates:
@@ -337,6 +337,17 @@ class circuit:
 
     def write_to_CNF_file(self,gate,stuck_at_value):
         """ writes clauses to CNF file and calls miniSAT """
+        #if type(gate) == list:
+            #! HANDLE FANOUT
+            #! HANDLE FANOUT
+            #! HANDLE FANOUT
+            #! HANDLE FANOUT
+            #! HANDLE FANOUT
+            #["6gat","3gat"]
+
+        if len(self.getFanouts(gate)) > 1:
+            print(gate,"has fanout of ",self.getFanouts(gate))
+
         if gate in self.PIs:
             print(gate,"stuck at ",stuck_at_value)
     
@@ -399,28 +410,6 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
 
-    #!  MARY PLEASE TEST THIS!!!!!!
-    test_vec = ckt.write_to_CNF_file("6gat",1)[1] #! WORKS (MARY SAID)
-    print("TEST VECT IS: ",test_vec)
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("4gat",0)[1] #! WORKS (MARY SAID)
-    print("TEST VECT IS: ",test_vec)
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("1gat",0)[1] #! WORKS (MARY SAID)
-    print("TEST VECT IS: ",test_vec)
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("9gat",0)[1]
-    print("TEST VECT IS: ",test_vec)
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("8gat",1)[1]
-    print("TEST VECT IS: ",test_vec)
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("7gat",1)[1]
-    print("TEST VECT IS: ",test_vec)
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("7gat",0)[1]
-    print("TEST VECT IS: ",test_vec)
-    print("***************************************************")
-    test_vec = ckt.write_to_CNF_file("6gat",0)[1]
+    #test_vec = ckt.write_to_CNF_file(["6gat","3gat"],1)[1] #! NEED TO MAKE IT DETECT FANOUT
     print("TEST VECT IS: ",test_vec)
     #!  MARY PLEASE TEST THIS!!!!!!
