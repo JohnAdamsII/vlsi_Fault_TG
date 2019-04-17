@@ -240,9 +240,11 @@ class circuit:
         
         return self.expr_map
 
-
-
-    def get_faulty_Expr(self,stuck_at_value="",fanouts=[]):
+    def get_faulty_Expr(self,stuck_at_value="",fanouts=[],fanout=False):
+        
+        if len(fanouts) != 0:
+            fanout = True
+            print("Fanouts: ",fanouts)
         
         """ Needs to be tested with a ckt with a not gate """
         for gate in self.gates:
@@ -261,11 +263,13 @@ class circuit:
             if self.getType(gate) == 'nor':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.fault_exp_map.keys():
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]:
+                        inputs.append(stuck_at_value)
+                    elif Input in self.fault_exp_map.keys():
                         inputs.append(self.fault_exp_map[Input])
                     else:
                         inputs.append(symbols(Input))
-                
+
                 self.fault_exp_map[gate] = ~(inputs[0] | inputs[1])
 
             if self.getType(gate) == 'nand':
@@ -307,18 +311,23 @@ class circuit:
     def get_expr(self):
         return self.expr_map[self.POs[0]][0]
     
-    def get_clauses(self,gate,stuck_at_value):
+    def get_clauses(self,gate,stuck_at_value,fanouts=[]):
         """ formats circuit expressions into clauses to write to CNF file for set solving
         need to be modify to handle different gate names in other circuits """
         
-        self.fault_exp_map[gate]= stuck_at_value #set fault
-        faulty_expr = self.get_faulty_Expr(stuck_at_value) #get fault expression
+        if type(gate) != list:
+            self.fault_exp_map[gate]= stuck_at_value #set fault
+            faulty_expr = self.get_faulty_Expr(stuck_at_value) #get fault expression
+        else:
+            faulty_expr = self.get_faulty_Expr(stuck_at_value,fanouts=gate)
+
+        
+        
         print("faulty expression is: ",faulty_expr)
         self.fault_exp_map = {} #reset map
         ff_ckt = self.get_faulty_Expr() #get free faulty circuit
         self.fault_exp_map = {}
         print("fault free expression is: ",ff_ckt)
-        
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
         xor_expr = to_cnf(xor_expr,simplify=True) #get xor expr in CNF
         print("faulty XOR fault_free = ",xor_expr)
@@ -335,23 +344,15 @@ class circuit:
             clauses[index] = clauses[index].replace("gat","") #! THIS WILL BREAK WITH DIFFERENT GATE NAMES!
         return clauses
 
-    def write_to_CNF_file(self,gate,stuck_at_value):
+    def write_to_CNF_file(self,gate,stuck_at_value,fanouts=[]):
         """ writes clauses to CNF file and calls miniSAT """
-        #if type(gate) == list:
-            #! HANDLE FANOUT
-            #! HANDLE FANOUT
-            #! HANDLE FANOUT
-            #! HANDLE FANOUT
-            #! HANDLE FANOUT
-            #["6gat","3gat"]
-
-        if len(self.getFanouts(gate)) > 1:
-            print(gate,"has fanout of ",self.getFanouts(gate))
-
         if gate in self.PIs:
             print(gate,"stuck at ",stuck_at_value)
-    
-        clauses = self.get_clauses(gate,stuck_at_value)
+
+        if type(gate) == list:
+            clauses = self.get_clauses(gate,stuck_at_value,fanouts)
+        else:
+            clauses = self.get_clauses(gate,stuck_at_value)
 
         num_Vars = len(self.PIs)
         num_Clasues = len(clauses)
@@ -410,6 +411,6 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
 
-    #test_vec = ckt.write_to_CNF_file(["6gat","3gat"],1)[1] #! NEED TO MAKE IT DETECT FANOUT
+    test_vec = ckt.write_to_CNF_file(["6gat","3gat"],1)[1] #! NEED TO MAKE IT DETECT FANOUT
     print("TEST VECT IS: ",test_vec)
     #!  MARY PLEASE TEST THIS!!!!!!
