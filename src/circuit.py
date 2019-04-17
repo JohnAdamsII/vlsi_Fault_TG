@@ -246,10 +246,11 @@ class circuit:
         
         """ Needs to be tested with a ckt with a not gate """
         for gate in self.gates:
+
             if gate in self.fault_exp_map.keys():
-                    print(gate," stuck at ",stuck_at_value)
-                    self.fault_exp_map[gate] = stuck_at_value #! this needs to change!!!
-                    continue
+                print(gate," stuck at ",stuck_at_value)
+                continue
+    
             if self.getType(gate) == 'not':
 
                 in1 = self.getInputs(gate)[0]
@@ -336,7 +337,9 @@ class circuit:
 
     def write_to_CNF_file(self,gate,stuck_at_value):
         """ writes clauses to CNF file and calls miniSAT """
-
+        if gate in self.PIs:
+            print(gate,"stuck at ",stuck_at_value)
+    
         clauses = self.get_clauses(gate,stuck_at_value)
 
         num_Vars = len(self.PIs)
