@@ -2,3 +2,6 @@
 
 This Project includes software to test very large scale digital circuits. Testing includes generating test vectors for the circuit
 and discovering faults.
+
+
+www.dcode.fr/boolean-expressions-calculator
