@@ -315,6 +315,7 @@ class circuit:
         print("faulty expression is: ",faulty_expr)
         self.fault_exp_map = {} #reset map
         ff_ckt = self.get_faulty_Expr() #get free faulty circuit
+        self.fault_exp_map = {}
         print("fault free expression is: ",ff_ckt)
         
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
@@ -398,33 +399,25 @@ if __name__ == '__main__':
     #!  MARY PLEASE TEST THIS!!!!!!
     test_vec = ckt.write_to_CNF_file("6gat",1)[1] #! WORKS (MARY SAID)
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     print("***************************************************")
     test_vec = ckt.write_to_CNF_file("4gat",0)[1] #! WORKS (MARY SAID)
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     print("***************************************************")
     test_vec = ckt.write_to_CNF_file("1gat",0)[1] #! WORKS (MARY SAID)
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     print("***************************************************")
     test_vec = ckt.write_to_CNF_file("9gat",0)[1]
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     print("***************************************************")
     test_vec = ckt.write_to_CNF_file("8gat",1)[1]
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     print("***************************************************")
     test_vec = ckt.write_to_CNF_file("7gat",1)[1]
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     print("***************************************************")
     test_vec = ckt.write_to_CNF_file("7gat",0)[1]
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     print("***************************************************")
     test_vec = ckt.write_to_CNF_file("6gat",0)[1]
     print("TEST VECT IS: ",test_vec)
-    ckt.fault_exp_map = {}
     #!  MARY PLEASE TEST THIS!!!!!!
