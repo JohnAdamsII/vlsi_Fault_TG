@@ -73,5 +73,17 @@ class test_circuit(unittest.TestCase):
         self.assertEqual(ckt.write_to_CNF_file("1gat",1)[1], [0,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
+        self.assertEqual(ckt.write_to_CNF_file(["6gat","3gat"],0)[1], [0,0,1,0,0])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file(["6gat","3gat"],1)[1], [0,0,0,0,0])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],0)[1], [x,x,1,1,0])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],1)[1], [1,1,0,1,0])
+        print ("----------------------------------------\n========================================")
+
 if __name__ == '__main__':
     unittest.main(exit=False)
