@@ -15,6 +15,7 @@ from circuit import circuit
 class test_circuit(unittest.TestCase):
 
     def test_write_to_CNF_file(self):
+
         ckt = circuit()
         ckt.makeCkt("t4_21.ckt")
         print ("----------------------------------------\n========================================")
@@ -79,11 +80,76 @@ class test_circuit(unittest.TestCase):
         self.assertEqual(ckt.write_to_CNF_file(["6gat","3gat"],1)[1], [0,0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],0)[1], [x,x,1,1,0])
+        self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],0)[1], [x,x,1,1,0])        #xor wrong
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],1)[1], [1,1,0,1,0])
+        self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],1)[1], [1,1,0,1,0])        #xor wrong
         print ("----------------------------------------\n========================================")
+"""
+        ckt = circuit()
+        ckt.makeCkt("t4_3.ckt") #the test it has a #before them they are MISSING a 4 bit
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("8gat",0)[1], [0,0,0,1])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("8gat",1)[1], [0,0,0,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("7gat",0)[1], [1,0,1,0])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("7gat",1)[1], [0,0,0,0])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("6gat",0)[1], [0,0,0,1])
+        print ("----------------------------------------\n========================================")
+ 
+        self.assertEqual(ckt.write_to_CNF_file("6gat",1)[1], [1,0,0,1])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("5gat",0)[1], [1,0,1,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("5gat",1)[1], [1,0,0,0])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("4gat",0)[1], [0,0,0,1])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("4gat",1)[1], [0,0,0,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("3gat",0)[1], [1,0,1,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("3gat",1)[1], [1,0,0,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("2gat",0)[1], [1,1,0,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("2gat",1)[1], [1,0,0,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file("1gat",0)[1], [1,0,1,0])
+        print ("----------------------------------------\n========================================")
+
+        self.assertEqual(ckt.write_to_CNF_file("1gat",1)[1], [0,0,1,0])
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file(["7gat","1gat"],0)[1], [1,x,x,x])        #xor wrong
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file(["7gat","1gat"],1)[1], [0,x,x,x])        #xor wrong
+        print ("----------------------------------------\n========================================")
+        
+        #self.assertEqual(ckt.write_to_CNF_file(["6gat","1gat"],0)[1], [1,0,0,1])        #xor wrong
+        print ("----------------------------------------\n========================================")
+
+        #self.assertEqual(ckt.write_to_CNF_file(["6gat","1gat"],1)[1], [0,x,x,1])        #xor wrong
+        print ("----------------------------------------\n========================================")
+"""
 
 if __name__ == '__main__':
     unittest.main(exit=False)
