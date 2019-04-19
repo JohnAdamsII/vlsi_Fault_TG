@@ -403,15 +403,16 @@ class circuit:
         print(SAT,vector)
 
         final_vec = [0 if '-' in x else 1 for x in vector ]
-        if SAT:
-            print("input vector: ",final_vec," will detect fault!")
-        else:
-            print("Fault is undetectable!")
-        #print(final_vec[0],type(final_vec[0]))
+        if not(SAT):
+            print("Expression not satisfiable!")
+            return None
+      
         if SAT and len(final_vec) < len(self.PIs):
             final_vec.extend([0] * (len(self.PIs) - len(final_vec)) )
+            print("input vector: ",final_vec," will detect fault!")
             return (SAT, final_vec)
-        else:    
+        else: 
+            print("input vector: ",final_vec," will detect fault!")   
             return (SAT,final_vec)
 
 
