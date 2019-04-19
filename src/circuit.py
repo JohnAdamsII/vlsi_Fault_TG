@@ -254,6 +254,7 @@ class circuit:
                 continue
     
             if self.getType(gate) == 'not':
+                #! ADD FANOUT HANDLING HERE
 
                 in1 = self.getInputs(gate)[0]
                 s1 = symbols(in1)
@@ -263,7 +264,7 @@ class circuit:
             if self.getType(gate) == 'nor':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if fanout and gate == fanouts[0] and Input == fanouts[1]:
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]: #! ADD THIS TO ALL branches!
                         inputs.append(stuck_at_value)
                     elif Input in self.fault_exp_map.keys():
                         inputs.append(self.fault_exp_map[Input])
@@ -275,7 +276,9 @@ class circuit:
             if self.getType(gate) == 'nand':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.fault_exp_map.keys():
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]:
+                        inputs.append(stuck_at_value)
+                    elif Input in self.fault_exp_map.keys():
                         inputs.append(self.fault_exp_map[Input][0])
                     else:
                         inputs.append(symbols(Input))
@@ -285,7 +288,9 @@ class circuit:
             if self.getType(gate) == 'and':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.fault_exp_map.keys():
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]: #! ADD THIS TO ALL branches!
+                        inputs.append(stuck_at_value)
+                    elif Input in self.fault_exp_map.keys():
                         inputs.append(self.fault_exp_map[Input])
                     else:
                         inputs.append(symbols(Input))
