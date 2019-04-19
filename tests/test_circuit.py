@@ -140,16 +140,16 @@ class test_circuit(unittest.TestCase):
         self.assertEqual(ckt2.write_to_CNF_file("1gat",1)[1], [0,0,1,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file(["7gat","1gat"],0)[1], [1,0,1,0])
-        print ("----------------------------------------\n========================================")
+        #self.assertEqual(ckt2.write_to_CNF_file(["7gat","1gat"],0)[1], [1,0,1,0])
+        #print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt2.write_to_CNF_file(["7gat","1gat"],1)[1], [0,0,1,0])
         print ("----------------------------------------\n========================================")
         
-        #self.assertEqual(ckt2.write_to_CNF_file(["6gat","1gat"],0)[1], [1,0,0,1])        #Not gate fan out
+        self.assertEqual(ckt2.write_to_CNF_file(["6gat","1gat"],0)[1], [0,0,0,1])        #Not gate fan out
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt2.write_to_CNF_file(["6gat","1gat"],1)[1], [0,x,x,1])        #Not gate fan out
+        self.assertEqual(ckt2.write_to_CNF_file(["6gat","1gat"],1)[1], [1,0,0,1])        #Not gate fan out
         print ("----------------------------------------\n========================================")
 
 

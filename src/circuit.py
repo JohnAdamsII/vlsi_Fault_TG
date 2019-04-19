@@ -255,11 +255,13 @@ class circuit:
     
             if self.getType(gate) == 'not':
                 #! ADD FANOUT HANDLING HERE
-
-                in1 = self.getInputs(gate)[0]
-                s1 = symbols(in1)
-                
-                self.fault_exp_map[gate] = ~s1
+                #! THIS IS MESSED UP
+                if fanout:
+                    self.fault_exp_map[gate] = int(stuck_at_value)
+                else:
+                    in1 = self.getInputs(gate)[0]
+                    s1 = symbols(in1)
+                    self.fault_exp_map[gate] = ~s1
 
             if self.getType(gate) == 'nor':
                 inputs = []
@@ -424,8 +426,9 @@ if __name__ == '__main__':
     #test_vec = ckt.write_to_CNF_file(["6gat","3gat"],1)[1] #! NEED TO MAKE IT DETECT FANOUT
     #print("TEST VECT IS: ",test_vec)
     #!  MARY PLEASE TEST THIS!!!!!!
+    test_vec = ckt.write_to_CNF_file(["7gat","1gat"],0)[1]       #Not gate fan out
 
-    test_vec = ckt.write_to_CNF_file("7gat",0)[1] #! NEED TO MAKE IT DETECT FANOUT
+    #test_vec = ckt.write_to_CNF_file("7gat",0)[1] #! NEED TO MAKE IT DETECT FANOUT
     print(test_vec)
     # ckt2 = circuit()
     # ckt2.makeCkt("t4_21.ckt")
