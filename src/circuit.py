@@ -407,15 +407,25 @@ class circuit:
             print("input vector: ",final_vec," will detect fault!")
         else:
             print("Fault is undetectable!")
-
-        return (SAT,final_vec)
+        #print(final_vec[0],type(final_vec[0]))
+        if SAT and len(final_vec) < len(self.PIs):
+            final_vec.extend([0] * (len(self.PIs) - len(final_vec)) )
+            return (SAT, final_vec)
+        else:    
+            return (SAT,final_vec)
 
 
 if __name__ == '__main__':
 
     ckt = circuit()
-    ckt.makeCkt("t4_21.ckt")
+    ckt.makeCkt("t4_3.ckt")
 
-    test_vec = ckt.write_to_CNF_file(["6gat","3gat"],1)[1] #! NEED TO MAKE IT DETECT FANOUT
-    print("TEST VECT IS: ",test_vec)
+    #test_vec = ckt.write_to_CNF_file(["6gat","3gat"],1)[1] #! NEED TO MAKE IT DETECT FANOUT
+    #print("TEST VECT IS: ",test_vec)
     #!  MARY PLEASE TEST THIS!!!!!!
+
+    test_vec = ckt.write_to_CNF_file("7gat",0)[1] #! NEED TO MAKE IT DETECT FANOUT
+    print(test_vec)
+    # ckt2 = circuit()
+    # ckt2.makeCkt("t4_21.ckt")
+    # test_vec2 = ckt2.write_to_CNF_file("7gat",0)[1]
