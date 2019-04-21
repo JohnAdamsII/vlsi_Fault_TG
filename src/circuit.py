@@ -1,6 +1,7 @@
 from read_Netlist import read_Netlist
 from sympy import to_cnf,symbols,sympify,Xor
 import os, subprocess
+import string
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) #path to file
 parent_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) #path to parent dir of file
@@ -28,7 +29,7 @@ class circuit:
         type_map, input_map = ({} for i in range(2))
 
         for gates, ckt_type in zip(self.gates, types):
-            type_map[gates] = ckt_type
+            type_map[gates] = ckt_type.lower()
 
         for gates, inputs in zip(self.gates, ckt.wires):
             input_map[gates] = inputs[2:]
@@ -262,7 +263,7 @@ class circuit:
                         inputs.append(symbols(Input))
                 
                 expr[gate] = (inputs[0] | inputs[1])
-
+        #print(self.POs)
         return expr[self.POs[0]] #! ONLY WORKS WITH ONE PO right now
 
     def get_clauses(self,gate,stuck_at_value,fanouts=[]):
@@ -284,7 +285,7 @@ class circuit:
         print("faulty XOR fault_free = ",xor_expr)
        
         clauses = str(xor_expr).split("&")
-
+  
         for index,item in enumerate(clauses):
             clauses[index] = item.strip()
             clauses[index] = clauses[index].replace("(","")
@@ -293,8 +294,23 @@ class circuit:
             clauses[index] = clauses[index].replace("|","")
             clauses[index] = clauses[index].replace("  "," ")
             clauses[index] = clauses[index].replace("gat","") #! THIS WILL BREAK WITH DIFFERENT GATE NAMES!
+        
+        print("clauses = ", clauses)
+        if clauses[0][0].isalpha():
+            for i,clause in enumerate(clauses):
+                for j,char in enumerate(clause):
+                    if char.isalpha() and j == 0:
+                        clauses[i] = str(string.ascii_lowercase.index(char)+1)
+                        break
+                    elif char.isalpha() and j == 1:
+                        clauses[i] = "-"+str(string.ascii_lowercase.index(char)+1)       
+            print("new clauses = ",clauses)
+
         return clauses
 
+
+    def formatClauses(self,clauses):
+        pass
     def setSolver(self,gate,stuck_at_value,fanouts=[]):
         """ writes clauses to CNF file and calls miniSAT """
         if gate in self.PIs:
@@ -351,12 +367,12 @@ if __name__ == '__main__':
 
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
+    test_vec = ckt.setSolver("1gat",1)[1]
 
-    fault_list = ckt.getFaultList()
-    new_fault_list = ckt.formatFaultlist(fault_list)
- 
-    new_collapsed_list = ckt.collapseFaults()
-    new_collapsed_list = ckt.formatFaultlist(new_collapsed_list)
+    ckt2 = circuit()
+    ckt2.makeCkt("t5_10.ckt")
+    #test_vec2 = ckt2.setSolver("agat",0)[1]
+    test_vec3 = ckt2.setSolver("agat",1)[1]
    
 
 
