@@ -172,7 +172,7 @@ class circuit:
     def func_eq(self, gate):
         #* input s-a-c faults and the output s-a-(c XOR i) are functionally equivalent.
         if self.getType(gate) == 'not':
-            return None #! add support for not gates here
+            return None
         else:
             inputs = self.getInputs(gate)
             return (str(gate)+"-"+str(self.cXORi(gate)), inputs[0]+'-'+str(self.c(gate)), inputs[1]+'-'+str(self.c(gate)))
@@ -358,12 +358,5 @@ if __name__ == '__main__':
     new_collapsed_list = ckt.collapseFaults()
     new_collapsed_list = ckt.formatFaultlist(new_collapsed_list)
    
-    #[print(x) for x in new_fault_list]
-    #[print(x) for x in new_collapsed_list]
-
-
-    # for fault in new_collapsed_list:
-    #     gate,stuck_at_value = fault[0],int(fault[1])
-    #     print(ckt.setSolver(gate,stuck_at_value)[1])
 
 
