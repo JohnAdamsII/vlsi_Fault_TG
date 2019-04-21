@@ -123,6 +123,7 @@ class circuit:
             self.assignOutput(gate)
 
     def getFaultList(self):
+        #! Need to add fanout to fault list!
         all_gates = self.gates + self.PIs
         fault_list = []
         
@@ -131,11 +132,22 @@ class circuit:
           
         self.fault_list = sorted(fault_list, key=lambda x: x[0][0])
         return self.fault_list
+    
+    def formatFaultlist(self,fault_list):
+        new_fault_list = []
+        for index,fault in enumerate(fault_list):
+            fault = fault_list[index].split("-")
+            new_fault_list.append(fault)
+        return new_fault_list
+
 
     def collapseFaults(self):
+         #! Need to add fanout to fault collapsing!
         fault_set = set()
         for gate in self.gates:
-            #! add support for not gates here
+            if self.getType(gate) == 'not':
+                #! add support for not gates here
+                continue
             eq = self.func_eq(gate)
             print("functionally equivalent faults: ","{"+str(eq[0])+","+str(eq[1])+","+str(eq[2])+"}")
             print(str(eq[1])+","+str(eq[2])+" will be removed from fault list")
@@ -145,6 +157,8 @@ class circuit:
         print("\ndominating relationship such that f dominates g (f,g)") 
         print("f will be removed from fault list")         
         for gate in self.gates:
+            if self.getType(gate) == 'not':
+                continue
             dom = self.dom(gate)
             print("("+dom[0]+","+dom[1]+")")
             print("("+dom[0]+","+dom[2]+")")
@@ -336,9 +350,20 @@ class circuit:
 if __name__ == '__main__':
 
     ckt = circuit()
-    ckt.makeCkt("t4_3.ckt")
+    ckt.makeCkt("t4_21.ckt")
 
-  
-    test_vec = ckt.setSolver(["7gat","1gat"],0)[1]       #Not gate fan out
-    print(test_vec)
+    fault_list = ckt.getFaultList()
+    new_fault_list = ckt.formatFaultlist(fault_list)
+ 
+    new_collapsed_list = ckt.collapseFaults()
+    new_collapsed_list = ckt.formatFaultlist(new_collapsed_list)
+   
+    #[print(x) for x in new_fault_list]
+    #[print(x) for x in new_collapsed_list]
+
+
+    # for fault in new_collapsed_list:
+    #     gate,stuck_at_value = fault[0],int(fault[1])
+    #     print(ckt.setSolver(gate,stuck_at_value)[1])
+
 

@@ -109,10 +109,10 @@ class test_circuit(unittest.TestCase):
         self.assertEqual(ckt2.setSolver("6gat",1)[1], [1,0,0,1])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.setSolver("5gat",0)[1], [1,0,1,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("5gat",0)[1], [1,0,1,0])       # missing last input #fixed
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.setSolver("5gat",1)[1], [1,0,0,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("5gat",1)[1], [1,0,0,0])       # missing last input #fixed
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt2.setSolver("4gat",0)[1], [0,0,0,1])
