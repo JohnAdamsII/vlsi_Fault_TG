@@ -254,10 +254,9 @@ class circuit:
                 continue
     
             if self.getType(gate) == 'not':
-                #! ADD FANOUT HANDLING HERE
-                #! THIS IS MESSED UP
-                if fanout:
-                    self.fault_exp_map[gate] = int(stuck_at_value)
+                Input = self.getInputs(gate)[0]
+                if fanout and fanouts[0] == gate and Input == fanouts[1]:
+                    self.fault_exp_map[gate] = bool(stuck_at_value)
                 else:
                     in1 = self.getInputs(gate)[0]
                     s1 = symbols(in1)
@@ -302,7 +301,9 @@ class circuit:
             if self.getType(gate) == 'or':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if Input in self.fault_exp_map.keys():
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]: #! ADD THIS TO ALL branches!
+                        inputs.append(stuck_at_value)
+                    elif Input in self.fault_exp_map.keys():
                         inputs.append(self.fault_exp_map[Input])
                     else:
                         inputs.append(symbols(Input))
