@@ -152,74 +152,74 @@ class test_circuit(unittest.TestCase):
         print ("----------------------------------------\n========================================")
 
 
-        ckt = circuit()
-        ckt.makeCkt("t5_10.ckt")
+        ckt3 = circuit()
+        ckt3.makeCkt("t5_10.ckt")
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("fgat",0)[1], [1,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("fgat",0)[1], [1,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver("fgat",1)[1], [0,0,0,0,0])
+        self.assertEqual(ckt3.setSolver("fgat",1)[1], [0,0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver("kgat",0)[1], [1,0,1,0,1])
+        self.assertEqual(ckt3.setSolver("kgat",0)[1], [1,0,1,0,1])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("kgat",1)[1], [1,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("kgat",1)[1], [1,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver("igat",0)[1], [0,0,1,1,0])
+        self.assertEqual(ckt3.setSolver("igat",0)[1], [0,0,1,1,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("igat",1)[1], [1,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("igat",1)[1], [1,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver("jgat",0)[1], [0,0,0,0,0])
+        self.assertEqual(ckt3.setSolver("jgat",0)[1], [0,0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("jgat",1)[1], [1,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("jgat",1)[1], [1,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("egat",0)[1], [1,1,0,0,1])
+        self.assertEqual(ckt3.setSolver("egat",0)[1], [1,1,0,0,1])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver("egat",1)[1], [1,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("egat",1)[1], [1,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("dgat",0)[1], [0,0,1,1,0])
+        self.assertEqual(ckt3.setSolver("dgat",0)[1], [0,0,1,1,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("dgat",1)[1], [0,0,1,0,0])
+        self.assertEqual(ckt3.setSolver("dgat",1)[1], [0,0,1,0,0])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver("cgat",0)[1], [0,1,1,0,0])
+        self.assertEqual(ckt3.setSolver("cgat",0)[1], [0,1,1,0,0])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver("cgat",1)[1], [0,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("cgat",1)[1], [0,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("bgat",0)[1], [1,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("bgat",0)[1], [1,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("bgat",1)[1], [1,0,0,0,0])
+        self.assertEqual(ckt3.setSolver("bgat",1)[1], [1,0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("agat",0)[1], [1,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("agat",0)[1], [1,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver("agat",1)[1], [0,1,0,0,0])
+        self.assertEqual(ckt3.setSolver("agat",1)[1], [0,1,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver(["jgat","cgat"],0)[1], [0,0,1,0,0])
+        self.assertEqual(ckt3.setSolver(["jgat","cgat"],0)[1], [0,0,1,0,0])
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt.setSolver(["jgat","cgat"],1)[1], [0,0,0,0,0])
+        self.assertEqual(ckt3.setSolver(["jgat","cgat"],1)[1], [0,0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver(["igat","cgat"],0)[1], [0,0,1,1,0])
+        self.assertEqual(ckt3.setSolver(["igat","cgat"],0)[1], [0,0,1,1,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt.setSolver(["igat","cgat"],1)[1], [1,1,0,1,0])
+        self.assertEqual(ckt3.setSolver(["igat","cgat"],1)[1], [1,1,0,1,0])
         print ("----------------------------------------\n========================================")
 
 

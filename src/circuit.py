@@ -295,22 +295,28 @@ class circuit:
             clauses[index] = clauses[index].replace("  "," ")
             clauses[index] = clauses[index].replace("gat","") #! THIS WILL BREAK WITH DIFFERENT GATE NAMES!
         
-        print("clauses = ", clauses)
-        if clauses[0][0].isalpha():
-            for i,clause in enumerate(clauses):
-                for j,char in enumerate(clause):
-                    if char.isalpha() and j == 0:
-                        clauses[i] = str(string.ascii_lowercase.index(char)+1)
-                        break
-                    elif char.isalpha() and j == 1:
-                        clauses[i] = "-"+str(string.ascii_lowercase.index(char)+1)       
-            print("new clauses = ",clauses)
-
-        return clauses
+        if self.POs[0][0].isalpha():             #! will need to change for t5_26a
+            return self.formatClauses(clauses)  
+        else:
+            return clauses
 
 
     def formatClauses(self,clauses):
-        pass
+        new_clauses = []
+        for clause in clauses:
+            temp = []
+            for index,char in enumerate(clause):
+                if char.isalpha():
+                    temp.append(string.ascii_lowercase.index(char)+1)
+                elif char == " ":
+                    temp.append(" ")
+                else:
+                    temp.append("-")
+                if index == len(clause)-1:
+                    new_clauses.append(''.join(str(elem) for elem in temp))
+        return new_clauses
+
+
     def setSolver(self,gate,stuck_at_value,fanouts=[]):
         """ writes clauses to CNF file and calls miniSAT """
         if gate in self.PIs:
@@ -367,12 +373,23 @@ if __name__ == '__main__':
 
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
-    test_vec = ckt.setSolver("1gat",1)[1]
+    test_vec = ckt.setSolver("10gat",1)[1]
 
     ckt2 = circuit()
     ckt2.makeCkt("t5_10.ckt")
-    #test_vec2 = ckt2.setSolver("agat",0)[1]
-    test_vec3 = ckt2.setSolver("agat",1)[1]
+    tect_vec2 = ckt2.setSolver("fgat",1)[1]
    
+   
+   
+    #test_vec2 = ckt2.setSolver("agat",0)[1]
+    #test_vec3 = ckt2.setSolver("agat",1)[1]
+    
+    # letter_clauses =  ['-c', '-e', '-a -b']
+    # ckt = circuit()
+    # clauses = ckt.formatClauses(letter_clauses)
+    # num_clauses =  ['-3', '-5', '-1 -2']
+
+    # if clauses == num_clauses:
+    #     print("SUCCESS!")
 
 
