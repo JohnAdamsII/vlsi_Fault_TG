@@ -14,141 +14,141 @@ from circuit import circuit
 
 class test_circuit(unittest.TestCase):
 
-    def test_write_to_CNF_file(self):
+    def test_setSolver(self):
         
-        # ckt = circuit()
-        # ckt.makeCkt("t4_21.ckt")
-        # print ("----------------------------------------\n========================================")
+        ckt = circuit()
+        ckt.makeCkt("t4_21.ckt")
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("10gat",0)[1], [1,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("10gat",0)[1], [1,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("10gat",1)[1], [0,0,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("10gat",1)[1], [0,0,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("8gat",0)[1], [1,0,1,0,1])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("8gat",0)[1], [1,0,1,0,1])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("8gat",1)[1], [1,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("8gat",1)[1], [1,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("7gat",0)[1], [0,0,1,1,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("7gat",0)[1], [0,0,1,1,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("7gat",1)[1], [1,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("7gat",1)[1], [1,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("6gat",0)[1], [0,0,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("6gat",0)[1], [0,0,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("6gat",1)[1], [1,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("6gat",1)[1], [1,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("5gat",0)[1], [1,1,0,0,1])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("5gat",0)[1], [1,1,0,0,1])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("5gat",1)[1], [1,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("5gat",1)[1], [1,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("4gat",0)[1], [0,0,1,1,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("4gat",0)[1], [0,0,1,1,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("4gat",1)[1], [0,0,1,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("4gat",1)[1], [0,0,1,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("3gat",0)[1], [0,1,1,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("3gat",0)[1], [0,1,1,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("3gat",1)[1], [0,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("3gat",1)[1], [0,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("2gat",0)[1], [1,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("2gat",0)[1], [1,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("2gat",1)[1], [1,0,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("2gat",1)[1], [1,0,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("1gat",0)[1], [1,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("1gat",0)[1], [1,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file("1gat",1)[1], [0,1,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver("1gat",1)[1], [0,1,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file(["6gat","3gat"],0)[1], [0,0,1,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver(["6gat","3gat"],0)[1], [0,0,1,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file(["6gat","3gat"],1)[1], [0,0,0,0,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver(["6gat","3gat"],1)[1], [0,0,0,0,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],0)[1], [0,0,1,1,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver(["7gat","3gat"],0)[1], [0,0,1,1,0])
+        print ("----------------------------------------\n========================================")
 
-        # self.assertEqual(ckt.write_to_CNF_file(["7gat","3gat"],1)[1], [1,1,0,1,0])
-        # print ("----------------------------------------\n========================================")
+        self.assertEqual(ckt.setSolver(["7gat","3gat"],1)[1], [1,1,0,1,0])
+        print ("----------------------------------------\n========================================")
         
         
         ckt2 = circuit()
         ckt2.makeCkt("t4_3.ckt") #the test it has a #before them they are MISSING a 4 bit
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("8gat",0)[1], [0,0,0,1])
+        self.assertEqual(ckt2.setSolver("8gat",0)[1], [0,0,0,1])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("8gat",1)[1], [0,0,0,0])
+        self.assertEqual(ckt2.setSolver("8gat",1)[1], [0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("7gat",0)[1], [1,0,1,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("7gat",0)[1], [1,0,1,0])       # missing last input
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("7gat",1)[1], [0,0,0,0])
+        self.assertEqual(ckt2.setSolver("7gat",1)[1], [0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("6gat",0)[1], [0,0,0,1])
+        self.assertEqual(ckt2.setSolver("6gat",0)[1], [0,0,0,1])
         print ("----------------------------------------\n========================================")
  
-        self.assertEqual(ckt2.write_to_CNF_file("6gat",1)[1], [1,0,0,1])
+        self.assertEqual(ckt2.setSolver("6gat",1)[1], [1,0,0,1])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("5gat",0)[1], [1,0,1,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("5gat",0)[1], [1,0,1,0])       # missing last input
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("5gat",1)[1], [1,0,0,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("5gat",1)[1], [1,0,0,0])       # missing last input
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("4gat",0)[1], [0,0,0,1])
+        self.assertEqual(ckt2.setSolver("4gat",0)[1], [0,0,0,1])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("4gat",1)[1], [0,0,0,0])
+        self.assertEqual(ckt2.setSolver("4gat",1)[1], [0,0,0,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("3gat",0)[1], [1,0,1,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("3gat",0)[1], [1,0,1,0])       # missing last input #fixed
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("3gat",1)[1], [1,0,0,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("3gat",1)[1], [1,0,0,0])       # missing last input #fixed
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("2gat",0)[1], [1,1,0,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("2gat",0)[1], [1,1,0,0])       # missing last input #fixed
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("2gat",1)[1], [1,0,0,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("2gat",1)[1], [1,0,0,0])       # missing last input #fixed
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("1gat",0)[1], [1,0,1,0])       # missing last input
+        self.assertEqual(ckt2.setSolver("1gat",0)[1], [1,0,1,0])       # missing last input #fixed
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file("1gat",1)[1], [0,0,1,0])
+        self.assertEqual(ckt2.setSolver("1gat",1)[1], [0,0,1,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file(["7gat","1gat"],0)[1], [1,0,1,0])
+        self.assertEqual(ckt2.setSolver(["7gat","1gat"],0)[1], [1,0,1,0])
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file(["7gat","1gat"],1)[1], [0,0,1,0])
+        self.assertEqual(ckt2.setSolver(["7gat","1gat"],1)[1], [0,0,1,0])
         print ("----------------------------------------\n========================================")
         
-        self.assertEqual(ckt2.write_to_CNF_file(["6gat","1gat"],0)[1], [0,0,0,1])        #Not gate fan out
+        self.assertEqual(ckt2.setSolver(["6gat","1gat"],0)[1], [0,0,0,1])        #Not gate fan out
         print ("----------------------------------------\n========================================")
 
-        self.assertEqual(ckt2.write_to_CNF_file(["6gat","1gat"],1)[1], [1,0,0,1])        #Not gate fan out
+        self.assertEqual(ckt2.setSolver(["6gat","1gat"],1)[1], [1,0,0,1])        #Not gate fan out
         print ("----------------------------------------\n========================================")
 
 

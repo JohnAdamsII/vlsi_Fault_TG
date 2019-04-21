@@ -9,8 +9,6 @@ parent_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) #path to parent 
 class circuit:
 
     gate_map = {}
-    expr_map = {}
-    fault_exp_map = {}
     gate_values = {}
     fault_list = []
     collapsed_fault_list = []
@@ -176,168 +174,99 @@ class circuit:
     def D_algo(self):
         pass
     
-    def build_Expr_map(self):
-        """ Needs to be tested with a ckt with a not gate """
-        for gate in self.gates:
-            if self.getType(gate) == 'not':
+    def getExpr(self,fault_gate="",stuck_at_value="",fanouts=[],fanout=False):
 
-                in1 = self.getInputs(gate)[0]
-                s1 = symbols(in1)
-            
-                str_repr = str(to_cnf( ~s1 ))
-                
-                self.expr_map[gate] = [to_cnf(~s1)]
-                self.expr_map[gate].append(str_repr)
-
-            if self.getType(gate) == 'nor':
-                inputs = []
-                for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
-                    else:
-                        inputs.append(symbols(Input))
-                
-                self.expr_map[gate] = [to_cnf(  ~(inputs[0] | inputs[1]), True)]
-                str_repr = str(to_cnf(~(inputs[0] | inputs[1]), True))
-                self.expr_map[gate].append(str_repr)
-
-            if self.getType(gate) == 'nand':
-                inputs = []
-                for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
-                    else:
-                        inputs.append(symbols(Input))
-                
-                self.expr_map[gate] = [to_cnf(  ~(inputs[0] & inputs[1]), True)]
-                str_repr = str(to_cnf(~(inputs[0] & inputs[1]), True))
-                self.expr_map[gate].append(str_repr)
-        
-            if self.getType(gate) == 'and':
-                inputs = []
-                for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
-                    else:
-                        inputs.append(symbols(Input))
-                
-                self.expr_map[gate] = [to_cnf(  (inputs[0] & inputs[1]), True)]
-                str_repr = str(to_cnf( (inputs[0] & inputs[1]),True))
-                self.expr_map[gate].append(str_repr)
-
-            if self.getType(gate) == 'or':
-                inputs = []
-                for Input in self.getInputs(gate):
-                    if Input in self.expr_map.keys():
-                        inputs.append(self.expr_map[Input][0])
-                    else:
-                        inputs.append(symbols(Input))
-                
-                self.expr_map[gate] = [to_cnf(  (inputs[0] | inputs[1]), True)]
-                str_repr = str(to_cnf( (inputs[0] | inputs[1]),True))
-                self.expr_map[gate].append(str_repr)
-
-        
-        return self.expr_map
-
-    def get_faulty_Expr(self,stuck_at_value="",fanouts=[],fanout=False):
+        expr = {}
         
         if len(fanouts) != 0:
             fanout = True
             print("Fanouts: ",fanouts)
+            print(fanouts[0],fanouts[1]," Stuck at ",stuck_at_value)
+        else:
+            expr[fault_gate]= stuck_at_value #! set fault
         
         """ Needs to be tested with a ckt with a not gate """
         for gate in self.gates:
 
-            if gate in self.fault_exp_map.keys():
+            if gate in expr.keys():
                 print(gate," stuck at ",stuck_at_value)
                 continue
     
             if self.getType(gate) == 'not':
                 Input = self.getInputs(gate)[0]
                 if fanout and fanouts[0] == gate and Input == fanouts[1]:
-                    self.fault_exp_map[gate] = bool(stuck_at_value)
+                    expr[gate] = bool(stuck_at_value)
                 else:
                     in1 = self.getInputs(gate)[0]
                     s1 = symbols(in1)
-                    self.fault_exp_map[gate] = ~s1
+                    expr[gate] = ~s1
 
             if self.getType(gate) == 'nor':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if fanout and gate == fanouts[0] and Input == fanouts[1]: #! ADD THIS TO ALL branches!
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]:
                         inputs.append(stuck_at_value)
-                    elif Input in self.fault_exp_map.keys():
-                        inputs.append(self.fault_exp_map[Input])
+                    elif Input in expr.keys():
+                        inputs.append(expr[Input])
                     else:
                         inputs.append(symbols(Input))
 
-                self.fault_exp_map[gate] = ~(inputs[0] | inputs[1])
+                expr[gate] = ~(inputs[0] | inputs[1])
 
             if self.getType(gate) == 'nand':
                 inputs = []
                 for Input in self.getInputs(gate):
                     if fanout and gate == fanouts[0] and Input == fanouts[1]:
                         inputs.append(stuck_at_value)
-                    elif Input in self.fault_exp_map.keys():
-                        inputs.append(self.fault_exp_map[Input][0])
+                    elif Input in expr.keys():
+                        inputs.append(expr[Input][0])
                     else:
                         inputs.append(symbols(Input))
                 
-                self.fault_exp_map[gate] = ~(inputs[0] & inputs[1])
+                expr[gate] = ~(inputs[0] & inputs[1])
                
             if self.getType(gate) == 'and':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if fanout and gate == fanouts[0] and Input == fanouts[1]: #! ADD THIS TO ALL branches!
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]:
                         inputs.append(stuck_at_value)
-                    elif Input in self.fault_exp_map.keys():
-                        inputs.append(self.fault_exp_map[Input])
+                    elif Input in expr.keys():
+                        inputs.append(expr[Input])
                     else:
                         inputs.append(symbols(Input))
                 
-                self.fault_exp_map[gate] = (inputs[0] & inputs[1])
+                expr[gate] = (inputs[0] & inputs[1])
               
             if self.getType(gate) == 'or':
                 inputs = []
                 for Input in self.getInputs(gate):
-                    if fanout and gate == fanouts[0] and Input == fanouts[1]: #! ADD THIS TO ALL branches!
+                    if fanout and gate == fanouts[0] and Input == fanouts[1]:
                         inputs.append(stuck_at_value)
-                    elif Input in self.fault_exp_map.keys():
-                        inputs.append(self.fault_exp_map[Input])
+                    elif Input in expr.keys():
+                        inputs.append(expr[Input])
                     else:
                         inputs.append(symbols(Input))
                 
-                self.fault_exp_map[gate] = (inputs[0] | inputs[1])
+                expr[gate] = (inputs[0] | inputs[1])
 
-        return self.fault_exp_map[self.POs[0]] #! ONLY WORKS WITH ONE PO right now
+        return expr[self.POs[0]] #! ONLY WORKS WITH ONE PO right now
 
-
-    def get_ckt_expr_str(self):
-        """ only works currently if ckt has only one PO """
-        return self.expr_map[self.POs[0]][1]
-    def get_expr(self):
-        return self.expr_map[self.POs[0]][0]
-    
     def get_clauses(self,gate,stuck_at_value,fanouts=[]):
         """ formats circuit expressions into clauses to write to CNF file for set solving
         need to be modify to handle different gate names in other circuits """
         
+        #! if no fanout
         if type(gate) != list:
-            self.fault_exp_map[gate]= stuck_at_value #set fault
-            faulty_expr = self.get_faulty_Expr(stuck_at_value) #get fault expression
+            faulty_expr = self.getExpr(fault_gate=gate,stuck_at_value=stuck_at_value) #get fault expression
         else:
-            faulty_expr = self.get_faulty_Expr(stuck_at_value,fanouts=gate)
+            #! if fanout
+            faulty_expr = self.getExpr(stuck_at_value=stuck_at_value,fanouts=gate)
 
-        
-        
         print("faulty expression is: ",faulty_expr)
-        self.fault_exp_map = {} #reset map
-        ff_ckt = self.get_faulty_Expr() #get free faulty circuit
-        self.fault_exp_map = {}
+        ff_ckt = self.getExpr() #get fault free circuit expression
         print("fault free expression is: ",ff_ckt)
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
-        xor_expr = to_cnf(xor_expr,simplify=True) #get xor expr in CNF
+        xor_expr = to_cnf(xor_expr,simplify=True) #convert xor expr to CNF
         print("faulty XOR fault_free = ",xor_expr)
        
         clauses = str(xor_expr).split("&")
@@ -352,7 +281,7 @@ class circuit:
             clauses[index] = clauses[index].replace("gat","") #! THIS WILL BREAK WITH DIFFERENT GATE NAMES!
         return clauses
 
-    def write_to_CNF_file(self,gate,stuck_at_value,fanouts=[]):
+    def setSolver(self,gate,stuck_at_value,fanouts=[]):
         """ writes clauses to CNF file and calls miniSAT """
         if gate in self.PIs:
             print(gate,"stuck at ",stuck_at_value)
@@ -379,22 +308,7 @@ class circuit:
         cnf_path = parent_dir + '/bin/'
         runminiSAT = subprocess.call(miniSAT_path +" -verb=0 "+cnf_path+'/cnf_file'+" "+cnf_path+"out.txt", shell=True)
         return self.getSAT()
-
-        
-   
-    # def get_xor_CNF_expr(self,gate,stuck_at_value):
-    #     ff_ckt = self.get_expr()
-    #     faulty_ckt = ff_ckt.subs(gate,stuck_at_value)
-    #     final_expr = Xor(faulty_ckt,ff_ckt)
-    #     final_expr = to_cnf(final_expr,simplify=True)
-    #     return str(final_expr)
-
-    # def get_Faulty_ckt(self,gate,stuck_at_value):
-    #     ff_ckt = self.get_expr()
-    #     return ff_ckt.subs(gate,stuck_at_value)
     
-        
-
     def getSAT(self):
         """ read output of set solver and return if expression is SAT 
         and what vector makes expression true if any  """
@@ -424,13 +338,7 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_3.ckt")
 
-    #test_vec = ckt.write_to_CNF_file(["6gat","3gat"],1)[1] #! NEED TO MAKE IT DETECT FANOUT
-    #print("TEST VECT IS: ",test_vec)
-    #!  MARY PLEASE TEST THIS!!!!!!
-    test_vec = ckt.write_to_CNF_file(["7gat","1gat"],0)[1]       #Not gate fan out
-
-    #test_vec = ckt.write_to_CNF_file("7gat",0)[1] #! NEED TO MAKE IT DETECT FANOUT
+  
+    test_vec = ckt.setSolver(["7gat","1gat"],0)[1]       #Not gate fan out
     print(test_vec)
-    # ckt2 = circuit()
-    # ckt2.makeCkt("t4_21.ckt")
-    # test_vec2 = ckt2.write_to_CNF_file("7gat",0)[1]
+
