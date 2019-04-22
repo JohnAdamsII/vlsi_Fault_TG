@@ -370,10 +370,20 @@ class circuit:
 
 if __name__ == '__main__':
 
-    ckt = circuit()
-    ckt.makeCkt("t4_21.ckt")
-    test_vec = ckt.setSolver("10gat",1)[1]
+    # ckt = circuit()
+    # ckt.makeCkt("t4_21.ckt")
+    # test_vec = ckt.setSolver("10gat",1)[1]
 
-    ckt2 = circuit()
-    ckt2.makeCkt("t5_10.ckt")
-    tect_vec2 = ckt2.setSolver("fgat",1)[1]
+    # ckt2 = circuit()
+    # ckt2.makeCkt("t5_10.ckt")
+    # tect_vec2 = ckt2.setSolver("fgat",1)[1]
+
+    ckt4 = circuit()
+    ckt4.makeCkt("t5_26a_v1.ckt")
+
+    tect_vec3 = ckt4.setSolver(["6gat","1gat"],0)[1]    #, [1,0,0]
+    
+
+    #tect_vec4 = ckt4.setSolver(["6gat","1gat"],1)[1]    #, [0,0,1]
+    
+    

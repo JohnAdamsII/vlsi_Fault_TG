@@ -8,9 +8,9 @@ $ total lines in netlist : 14
 $
 $
 $ 
-X                   $ ... primary input
-Y                   $ ... primary input
-CI                  $ ... primary input
+1gat                   $ ... primary input
+2gat                   $ ... primary input
+3gat                  $ ... primary input
 
 $
 $
@@ -22,15 +22,15 @@ $
 $
 $       output         type        inputs
 $       ------         ----        ------
-        L              nand        X  Y
-        Q              nand        X  L
-        R              nand        L  Y
-        N              nand        Q  R
-        T              nand        CI N
-        U              nand        CI T
-        V              nand        T  N
-        S              nand        U  V
-        CO             nand        L  T
+        4gat              nand        1gat  2gat
+        6gat              nand        1gat  4gat
+        7gat              nand        4gat  2gat
+        5gat              nand        6gat  7gat
+        8gat              nand        3gat 5gat
+        9gat              nand        3gat 8gat
+        10gat              nand        8gat  5gat
+        11gat              nand        9gat  10gat
+        12gat             nand        4gat  8gat
 
 
 
