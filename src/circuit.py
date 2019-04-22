@@ -263,7 +263,7 @@ class circuit:
                         inputs.append(symbols(Input))
                 
                 expr[gate] = (inputs[0] | inputs[1])
-        #print(self.POs)
+                
         return expr[self.POs[0]] #! ONLY WORKS WITH ONE PO right now
 
     def get_clauses(self,gate,stuck_at_value,fanouts=[]):
@@ -299,7 +299,6 @@ class circuit:
             return self.formatClauses(clauses)  
         else:
             return clauses
-
 
     def formatClauses(self,clauses):
         new_clauses = []
@@ -378,18 +377,3 @@ if __name__ == '__main__':
     ckt2 = circuit()
     ckt2.makeCkt("t5_10.ckt")
     tect_vec2 = ckt2.setSolver("fgat",1)[1]
-   
-   
-   
-    #test_vec2 = ckt2.setSolver("agat",0)[1]
-    #test_vec3 = ckt2.setSolver("agat",1)[1]
-    
-    # letter_clauses =  ['-c', '-e', '-a -b']
-    # ckt = circuit()
-    # clauses = ckt.formatClauses(letter_clauses)
-    # num_clauses =  ['-3', '-5', '-1 -2']
-
-    # if clauses == num_clauses:
-    #     print("SUCCESS!")
-
-
