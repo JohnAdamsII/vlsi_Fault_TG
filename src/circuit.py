@@ -234,7 +234,7 @@ class circuit:
                     if fanout and gate == fanouts[0] and Input == fanouts[1]:
                         inputs.append(stuck_at_value)
                     elif Input in expr.keys():
-                        inputs.append(expr[Input][0])
+                        inputs.append(expr[Input])
                     else:
                         inputs.append(symbols(Input))
                 
@@ -280,6 +280,7 @@ class circuit:
         print("faulty expression is: ",faulty_expr)
         ff_ckt = self.getExpr() #get fault free circuit expression
         print("fault free expression is: ",ff_ckt)
+        #print("simplified fault free expr = ",sympify(ff_ckt))
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
         xor_expr = to_cnf(xor_expr,simplify=True) #convert xor expr to CNF
         print("faulty XOR fault_free = ",xor_expr)
@@ -381,9 +382,9 @@ if __name__ == '__main__':
     ckt4 = circuit()
     ckt4.makeCkt("t5_26a_v1.ckt")
 
-    tect_vec3 = ckt4.setSolver(["6gat","1gat"],0)[1]    #, [1,0,0]
+    #11 = (3 & 1 & 2) | (3 & ~1 & ~2) | ( ~3 & 1 & ~2) | ( ~3 & ~1 & 2)
+    #tect_vec3 = ckt4.setSolver(["6gat","1gat"],0)[1]    #, [1,0,0]
     
-
-    #tect_vec4 = ckt4.setSolver(["6gat","1gat"],1)[1]    #, [0,0,1]
+    tect_vec4 = ckt4.setSolver(["6gat","1gat"],1)[1]    #, [0,0,1]
     
     
