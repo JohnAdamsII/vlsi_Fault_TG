@@ -61,6 +61,10 @@ class circuit:
 
     def c(self, gate):
         return self.gate_map[gate][2]
+    
+    def i(self, gate):
+        #! check this
+        return self.gate_map[gate][3]
 
     def cXORi(self, gate):
         return self.gate_map[gate][4]
@@ -286,6 +290,10 @@ class circuit:
         print("faulty XOR fault_free = ",xor_expr)
        
         clauses = str(xor_expr).split("&")
+
+        # if not("gat" in self.POs[0]):
+            #call formating function to rename gates
+        #     #! Handle stupid circuit names
   
         for index,item in enumerate(clauses):
             clauses[index] = item.strip()
@@ -368,23 +376,86 @@ class circuit:
             print("input vector: ",final_vec," will detect fault!")   
             return (SAT,final_vec)
 
+    def D_propagate(self,l,v):
+        PO = self.POs[0]
+
+        print("l= ",l)
+        print("v= ",v)
+
+        #! Base case
+        if self.gate_values[PO]['output'] == 'D' or self.gate_values[PO]['output'] == '~D':
+            return "IT PROPAGATED!"
+        
+        
+        g = self.getOutput(l) #! current gate output
+        #print('g=',g)
+
+        #! setting l to err
+        if v == 0:
+            self.gate_values[g][l] = 'D'
+        elif v == 1:
+            self.gate_values[g][l] = '~D'
+        else:
+            self.gate_values[g][l] = v
+
+        #! set all inputs to ~c expect l
+        for Input in self.getInputs(g):
+            if Input == l:
+                continue
+            else:
+                self.gate_values[g][Input] = int(not(self.c(g)))
+          
+        if self.i(g) == 1 and v == 'D':
+            self.gate_values[g]['output'] = '~D'
+        elif self.i(g) == 0 and v =='~D':
+            self.gate_values[g]['output'] = '~D'
+        else:
+            self.gate_values[g]['output'] = 'D'
+            
+        return self.D_propagate(l=g,v=self.gate_values[g]['output'])
+            
+
+        # if not(self.getFanouts(l)):
+        #     print("No fanout!")
+        # else:
+        #     print(self.getFanouts(l))
+
+        
+        
+    def getOutput(self,Input):
+        for k,v in self.gate_values.items():
+            if Input in v:
+                return k
 
 if __name__ == '__main__':
 
-    # ckt = circuit()
-    # ckt.makeCkt("t4_21.ckt")
+    ckt = circuit()
+    ckt.makeCkt("t4_21.ckt")
+    
+    #PO = ckt.POs[0]
+    #ckt.gate_values[PO]['output']= 'D'
+    
+    [print(k,v) for k,v in ckt.gate_values.items()]
+    prop = ckt.D_propagate(l="1gat",v=0)
+    print(prop)
+    [print(k,v) for k,v in ckt.gate_values.items()]
+
+    #ckt.getOutput("1gat")
+    #ckt.getOutput("10gat")
+
     # test_vec = ckt.setSolver("10gat",1)[1]
 
     # ckt2 = circuit()
     # ckt2.makeCkt("t5_10.ckt")
     # tect_vec2 = ckt2.setSolver("fgat",1)[1]
 
-    ckt4 = circuit()
-    ckt4.makeCkt("t5_26a_v1.ckt")
+    #ckt4 = circuit()
+    #ckt4.makeCkt("t5_26a_v1.ckt")
 
     #11 = (3 & 1 & 2) | (3 & ~1 & ~2) | ( ~3 & 1 & ~2) | ( ~3 & ~1 & 2)
     #tect_vec3 = ckt4.setSolver(["6gat","1gat"],0)[1]    #, [1,0,0]
     
-    tect_vec4 = ckt4.setSolver(["6gat","1gat"],1)[1]    #, [0,0,1]
+    #tect_vec4 = ckt4.setSolver(["6gat","1gat"],1)[1]    #, [0,0,1]
+
     
-    
+
