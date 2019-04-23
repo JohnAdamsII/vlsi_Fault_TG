@@ -192,10 +192,7 @@ class circuit:
             inputs = self.getInputs(gate)
             return (str(gate)+"-"+str(self.cbarXORi(gate)), inputs[0]+'-'+str(int(not(self.c(gate)))), inputs[1]+'-'+str(int(not(self.c(gate)))))
 
-    def D_algo(self):
-        pass
-    
-    def getExpr(self,fault_gate="",stuck_at_value="",fanouts=[],fanout=False):
+    def getExpr(self,fault_gate="",stuck_at_value="",fanouts=[],fanout=False,PO=0):
 
         expr = {}
         
@@ -270,9 +267,9 @@ class circuit:
                 
                 expr[gate] = (inputs[0] | inputs[1])
                 
-        return expr[self.POs[0]] #! ONLY WORKS WITH ONE PO right now
+        return expr[self.POs[PO]] #! ONLY WORKS WITH ONE PO right now
 
-    def get_clauses(self,gate,stuck_at_value,fanouts=[]):
+    def get_clauses(self,gate,stuck_at_value,fanouts=[],PO=0):
         """ formats circuit expressions into clauses to write to CNF file for set solving
         need to be modify to handle different gate names in other circuits """
         
@@ -327,15 +324,15 @@ class circuit:
         return new_clauses
 
 
-    def setSolver(self,gate,stuck_at_value,fanouts=[]):
+    def setSolver(self,gate,stuck_at_value,fanouts=[],PO=0):
         """ writes clauses to CNF file and calls miniSAT """
         if gate in self.PIs:
             print(gate,"stuck at ",stuck_at_value)
 
         if type(gate) == list:
-            clauses = self.get_clauses(gate,stuck_at_value,fanouts)
+            clauses = self.get_clauses(gate,stuck_at_value,fanouts,PO)
         else:
-            clauses = self.get_clauses(gate,stuck_at_value)
+            clauses = self.get_clauses(gate,stuck_at_value,PO)
 
         num_Vars = len(self.PIs)
         num_Clasues = len(clauses)
@@ -377,21 +374,24 @@ class circuit:
         else: 
             print("input vector: ",final_vec," will detect fault!")   
             return (SAT,final_vec)
-
+    
+    def D_algo(self):
+        pass
+    
     def D_propagate(self,l,v):
         PO = self.POs[0]
-
         #print("l= ",l)
         #print("v= ",v)
-
         #! Base case
         if self.gate_values[PO]['output'] == 'D' or self.gate_values[PO]['output'] == '~D':
             return "SUCCESS"
-             
+          
         g = self.getOutput(l) #! current gate output
 
+        if g == None:
+            return 'FAILURE'
+        
         #! setting l to err
-        #print(self.getFanouts(l))
         if v == 0:
             self.gate_values[g][l] = 'D'
             for gate in self.getFanouts(l):
@@ -432,7 +432,11 @@ class circuit:
         return self.D_propagate(l=g,v=self.gate_values[g]['output'])
             
     def D_justify(self,l,v):
-            pass
+        pass
+        # if l in self.PIs:
+        #     return 
+        
+        # self.gate_values[]
     
     def makeJFrontier(self):
         #! consider storing direction ?
@@ -440,10 +444,10 @@ class circuit:
             if self.getType(k) == 'not':
                 continue
             if self.gate_values[k]['output'] == 'x':
-                print(k,"will not be in J-frontier!")
+                #print(k,"will not be in J-frontier!")
                 continue
             elif self.c(k) in self.getInputs(k):
-                print(k,"will not be in J-frontier!")
+                #print(k,"will not be in J-frontier!")
                 continue
             elif self.gate_values[k]['output'] == self.cbarXORi(k):
                 values = self.getValues()
@@ -458,12 +462,9 @@ class circuit:
                         else:
                             self.J_frontier.append([k,self.gate_values[k]['output']])
                             #print(k,self.gate_values[k]['output'])
-            else:
-                print(k," will not be in J-frontier")
-
-        
-        
-        
+            #else:
+                #print(k," will not be in J-frontier")
+   
     def makeDFrontier(self):
         for k in self.gate_values.keys():
             if self.gate_values[k]['output'] == 'x':
@@ -488,6 +489,7 @@ class circuit:
         for k,v in self.gate_values.items():
             if Input in v:
                 return k
+
     def checkX(self,values):
         bool_list = []
         for item in values:
@@ -503,16 +505,9 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
 
-    # Fanouts = ckt.getFanouts('3gat')
-    # print("FANOUT: ", Fanouts)
-    
-    #PO = ckt.POs[0]
-    #ckt.gate_values[PO]['output']= 'D'
-    
-    [print(k,v) for k,v in ckt.gate_values.items()]
     prop = ckt.D_propagate(l="3gat",v=1)
     print(prop)
-    print("After propagation is: ")
+    print("Assignments propagation is: ")
     [print(k,v) for k,v in ckt.gate_values.items()]
 
     ckt.makeJFrontier()
@@ -520,6 +515,3 @@ if __name__ == '__main__':
 
     ckt.makeDFrontier()
     print("D frontier is: ", ckt.D_frontier)
-
-    
-
