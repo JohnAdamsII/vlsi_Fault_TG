@@ -435,11 +435,34 @@ class circuit:
         return self.D_propagate(l=g,v=self.gate_values[g]['output'])
             
     def D_justify(self,l,v):
-        pass
-        # if l in self.PIs:
-        #     return 
+        #! NOT WORKING
+        print(l)
+        g = self.getOutput(l)
+
+        if l in self.PIs:
+            #! fanout ?
+            self.gate_values[g][l] = v
+            return self
+        else:
+            self.gate_values[l]['output'] = v
         
-        # self.gate_values[]
+        c = self.c(l)
+        i = self.i(l)
+        print("print l= ",l,"print c= ",c,"print i= ",i)
+
+        inval = v ^ i    #* v XOR i
+        print("inval= ",inval)
+
+        cbar = int(not(self.c(l)))
+        print("cbar= ",cbar)
+
+        if inval == int(not(self.c(l))):
+            inputs = self.getInputs(l)
+            for Input in inputs:
+                return self.D_justify(l=Input,v=inval)
+        else:
+            print("DO SOMETHING?!?!!?")
+            #! pick a random input of l and justify(input,inval) ??       
     
     def makeJFrontier(self):
         #! consider storing direction ?
@@ -507,17 +530,19 @@ if __name__ == '__main__':
 
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
-    #ckt.makeCkt("t5_26a_v1.ckt")
-
-    #test_vec = ckt.setSolver("4gat",0)[1] 
-
+ 
     prop = ckt.D_propagate(l="3gat",v=1)
     print(prop)
-    print("Assignments propagation is: ")
+    print("Assignments from propagation: ")
     [print(k,v) for k,v in ckt.gate_values.items()]
 
-    # ckt.makeJFrontier()
-    # print('J frontier is: ', ckt.J_frontier)
+    ckt.makeJFrontier()
+    print("J frontier is: ", ckt.J_frontier)
+    l = ckt.J_frontier[0][0]
+    v = ckt.J_frontier[0][1]
 
-    ckt.makeDFrontier()
-    print("D frontier is: ", ckt.D_frontier)
+    ckt.D_justify(l,v)
+    [print(k,v) for k,v in ckt.gate_values.items()]
+    
+    #ckt.makeDFrontier()
+    #print("D frontier is: ", ckt.D_frontier)
