@@ -192,7 +192,10 @@ class circuit:
             inputs = self.getInputs(gate)
             return (str(gate)+"-"+str(self.cbarXORi(gate)), inputs[0]+'-'+str(int(not(self.c(gate)))), inputs[1]+'-'+str(int(not(self.c(gate)))))
 
-    def getExpr(self,fault_gate="",stuck_at_value="",fanouts=[],fanout=False,PO=0):
+    def D_algo(self):
+        pass
+    
+    def getExpr(self,PO,fault_gate="",stuck_at_value="",fanouts=[],fanout=False):
 
         expr = {}
         
@@ -269,19 +272,19 @@ class circuit:
                 
         return expr[self.POs[PO]] #! ONLY WORKS WITH ONE PO right now
 
-    def get_clauses(self,gate,stuck_at_value,fanouts=[],PO=0):
+    def get_clauses(self,PO,gate,stuck_at_value,fanouts=[]):
         """ formats circuit expressions into clauses to write to CNF file for set solving
         need to be modify to handle different gate names in other circuits """
         
         #! if no fanout
         if type(gate) != list:
-            faulty_expr = self.getExpr(fault_gate=gate,stuck_at_value=stuck_at_value) #get fault expression
+            faulty_expr = self.getExpr(fault_gate=gate,stuck_at_value=stuck_at_value, PO=PO) #get fault expression
         else:
             #! if fanout
-            faulty_expr = self.getExpr(stuck_at_value=stuck_at_value,fanouts=gate)
+            faulty_expr = self.getExpr(stuck_at_value=stuck_at_value,fanouts=gate, PO=PO)
 
         print("faulty expression is: ",faulty_expr)
-        ff_ckt = self.getExpr() #get fault free circuit expression
+        ff_ckt = self.getExpr(PO=PO) #get fault free circuit expression
         print("fault free expression is: ",ff_ckt)
         #print("simplified fault free expr = ",sympify(ff_ckt))
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
@@ -330,9 +333,9 @@ class circuit:
             print(gate,"stuck at ",stuck_at_value)
 
         if type(gate) == list:
-            clauses = self.get_clauses(gate,stuck_at_value,fanouts,PO)
+            clauses = self.get_clauses(PO,gate,stuck_at_value,fanouts)
         else:
-            clauses = self.get_clauses(gate,stuck_at_value,PO)
+            clauses = self.get_clauses(PO,gate,stuck_at_value)
 
         num_Vars = len(self.PIs)
         num_Clasues = len(clauses)
@@ -504,14 +507,17 @@ if __name__ == '__main__':
 
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
+    #ckt.makeCkt("t5_26a_v1.ckt")
+
+    #test_vec = ckt.setSolver("4gat",0)[1] 
 
     prop = ckt.D_propagate(l="3gat",v=1)
     print(prop)
     print("Assignments propagation is: ")
     [print(k,v) for k,v in ckt.gate_values.items()]
 
-    ckt.makeJFrontier()
-    print('J frontier is: ', ckt.J_frontier)
+    # ckt.makeJFrontier()
+    # print('J frontier is: ', ckt.J_frontier)
 
     ckt.makeDFrontier()
     print("D frontier is: ", ckt.D_frontier)
