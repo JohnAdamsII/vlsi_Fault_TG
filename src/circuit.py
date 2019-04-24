@@ -290,6 +290,9 @@ class circuit:
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
         xor_expr = to_cnf(xor_expr,simplify=True) #convert xor expr to CNF
         print("faulty XOR fault_free = ",xor_expr)
+
+        if xor_expr == False:
+            return "UNDECTECTABLE!"
        
         clauses = str(xor_expr).split("&")
 
@@ -327,7 +330,7 @@ class circuit:
         return new_clauses
 
 
-    def setSolver(self,gate,stuck_at_value,fanouts=[],PO=0):
+    def setSolver(self,gate,stuck_at_value,PO=0,fanouts=[]):
         """ writes clauses to CNF file and calls miniSAT """
         if gate in self.PIs:
             print(gate,"stuck at ",stuck_at_value)
@@ -336,6 +339,9 @@ class circuit:
             clauses = self.get_clauses(PO,gate,stuck_at_value,fanouts)
         else:
             clauses = self.get_clauses(PO,gate,stuck_at_value)
+
+        if clauses == "UNDECTECTABLE!":
+            clauses = ['1','-1']
 
         num_Vars = len(self.PIs)
         num_Clasues = len(clauses)
@@ -362,13 +368,14 @@ class circuit:
         with open(parent_dir+'/bin/out.txt','r') as f:
             lines = f.read().splitlines()
         SAT = True if lines[0] == 'SAT' else False
-        vector = lines[1][:-1].split()
-        print(SAT,vector)
-
-        final_vec = [0 if '-' in x else 1 for x in vector ]
+        if SAT:
+            vector = lines[1][:-1].split()
+            print(SAT,vector)
+        if SAT:
+            final_vec = [0 if '-' in x else 1 for x in vector ]
         if not(SAT):
             print("Expression not satisfiable!")
-            return None
+            return (None,"UNDETECTABLE!")
       
         if SAT and len(final_vec) < len(self.PIs):
             final_vec.extend([0] * (len(self.PIs) - len(final_vec)) )
@@ -538,6 +545,7 @@ if __name__ == '__main__':
 
     ckt.makeJFrontier()
     print("J frontier is: ", ckt.J_frontier)
+    
     l = ckt.J_frontier[0][0]
     v = ckt.J_frontier[0][1]
 

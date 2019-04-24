@@ -15,7 +15,7 @@ from circuit import circuit
 class test_circuit(unittest.TestCase):
 
     def test_setSolver(self):
-        """
+        
         ckt1 = circuit()
         ckt1.makeCkt("t4_21.ckt")
         print ("*----------------------------------------*\n*========================================*")
@@ -239,7 +239,7 @@ class test_circuit(unittest.TestCase):
 
         self.assertEqual(ckt3.setSolver(["igat","cgat"],1)[1], [1,1,0,1,0])
         print ("----------------------------------------\n========================================")
-        """
+    
 
         ckt4 = circuit()
         ckt4.makeCkt("t5_26a_v1.ckt")
@@ -342,7 +342,8 @@ class test_circuit(unittest.TestCase):
 
         self.assertEqual(ckt4.setSolver(["6gat","4gat"],1)[1], [1,1,0])      #L1
         print ("----------------------------------------")
-        #self.assertEqual(ckt4.setSolver(["6gat","4gat"],1,1)[1], ["x","x","x"])      #L1  //for detecting CO    XOR fault_free =  False
+        
+        self.assertEqual(ckt4.setSolver(["6gat","4gat"],1,1)[1], "UNDETECTABLE!")  #! UNDETECETABLE     #L1  //for detecting CO    XOR fault_free =  False
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["7gat","4gat"],0)[1], [0,1,0])      #L2
@@ -352,7 +353,8 @@ class test_circuit(unittest.TestCase):
 
         self.assertEqual(ckt4.setSolver(["7gat","4gat"],1)[1], [1,1,0])      #L2
         print ("----------------------------------------")
-        #self.assertEqual(ckt4.setSolver(["7gat","4gat"],1,1)[1], ["x","x","x"])      #L2  //for detecting CO    XOR fault_free =  False
+        
+        self.assertEqual(ckt4.setSolver(["7gat","4gat"],1,1)[1], "UNDETECTABLE!")   #! UNDETECETABLE   #L2  //for detecting CO    XOR fault_free =  False
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["12gat","4gat"],0,1)[1], [0,0,0])      #L3  //for detecting CO
