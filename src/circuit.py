@@ -370,11 +370,10 @@ class circuit:
         SAT = True if lines[0] == 'SAT' else False
         if SAT:
             vector = lines[1][:-1].split()
-            print(SAT,vector)
+            #print(SAT,vector)
         if SAT:
             final_vec = [0 if '-' in x else 1 for x in vector ]
         if not(SAT):
-            print("Expression not satisfiable!")
             return (None,"UNDETECTABLE!")
       
         if SAT and len(final_vec) < len(self.PIs):
@@ -385,8 +384,31 @@ class circuit:
             print("input vector: ",final_vec," will detect fault!")   
             return (SAT,final_vec)
     
-    def D_algo(self):
+    
+    def imply_and_check(self):
         pass
+
+    def solve(self,l,v):
+        test = self.setSolver(gate=l,stuck_at_value=v)
+        SAT = test[0]
+        if SAT:
+            print("D has propagated to PO and all lines justified!")
+            VEC = test[1]
+            print("Test vector: ",VEC," will detect ",l," stuck at ",v)
+        
+        
+    
+    def D_algo(self,l,v):
+        
+        self.D_propagate(l,v)
+
+        ckt.makeJFrontier()
+        print("J frontier is: ", ckt.J_frontier)
+
+        ckt.makeDFrontier()
+        print("D frontier is: ", ckt.D_frontier)
+    
+        self.solve(l=l,v=v)
     
     def D_propagate(self,l,v):
         PO = self.POs[0]
@@ -394,6 +416,7 @@ class circuit:
         #print("v= ",v)
         #! Base case
         if self.gate_values[PO]['output'] == 'D' or self.gate_values[PO]['output'] == '~D':
+            print("SUCCESS")
             return "SUCCESS"
           
         g = self.getOutput(l) #! current gate output
@@ -538,19 +561,21 @@ if __name__ == '__main__':
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
  
-    prop = ckt.D_propagate(l="3gat",v=1)
-    print(prop)
-    print("Assignments from propagation: ")
-    [print(k,v) for k,v in ckt.gate_values.items()]
+    ckt.D_algo(l="3gat",v=1)
+    #[print(k,v) for k,v in ckt.gate_values.items()]
+    #prop = ckt.D_propagate(l="3gat",v=1)
+    #print(prop)
+    #print("Assignments from propagation: ")
+   
 
-    ckt.makeJFrontier()
-    print("J frontier is: ", ckt.J_frontier)
+    # ckt.makeJFrontier()
+    # print("J frontier is: ", ckt.J_frontier)
     
-    l = ckt.J_frontier[0][0]
-    v = ckt.J_frontier[0][1]
+    # l = ckt.J_frontier[0][0]
+    # v = ckt.J_frontier[0][1]
 
-    ckt.D_justify(l,v)
-    [print(k,v) for k,v in ckt.gate_values.items()]
+    # ckt.D_justify(l,v)
+    # [print(k,v) for k,v in ckt.gate_values.items()]
     
     #ckt.makeDFrontier()
     #print("D frontier is: ", ckt.D_frontier)
