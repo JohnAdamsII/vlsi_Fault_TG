@@ -287,10 +287,14 @@ class circuit:
         ff_ckt = self.getExpr(PO=PO) #get fault free circuit expression
         if verb:
             print("fault free expression is: ",ff_ckt)
-            
-        xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
-        xor_expr = to_cnf(xor_expr,simplify=True) #convert xor expr to CNF
 
+        xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
+
+        if (verb):
+            xor_expr = to_cnf(xor_expr,simplify=True) #convert xor expr to CNF
+        else:
+            xor_expr = to_cnf(xor_expr,simplify=False)
+        
         if verb:
             print("faulty XOR fault_free = ",xor_expr)
 
@@ -410,18 +414,18 @@ class circuit:
     def D_algo(self,l,v):
 
         print("initalizing all values to x")
-        [print(k,v) for k,v in ckt.gate_values.items()]
+        [print(k,v) for k,v in self.gate_values.items()]
      
         self.D_propagate(l,v)
 
         print("Assignments from propagation: ")
-        [print(k,v) for k,v in ckt.gate_values.items()]
+        [print(k,v) for k,v in self.gate_values.items()]
 
-        ckt.makeJFrontier()
-        print("J frontier is: ", ckt.J_frontier)
+        self.makeJFrontier()
+        #print("J frontier is: ", ckt.J_frontier)
 
-        ckt.makeDFrontier()
-        print("D frontier is: ", ckt.D_frontier)
+        self.makeDFrontier()
+        #print("D frontier is: ", ckt.D_frontier)
     
         self.solve(l=l,v=v)
     
@@ -574,22 +578,30 @@ if __name__ == '__main__':
 
     ckt = circuit()
     ckt.makeCkt("t4_21.ckt")
- 
-    ckt.D_algo(l="3gat",v=1)
-    #[print(k,v) for k,v in ckt.gate_values.items()]
-    #prop = ckt.D_propagate(l="3gat",v=1)
-    #print(prop)
-    #print("Assignments from propagation: ")
+    
+    # ckt.D_algo(l="1gat",v=1)  # 0 1 0 0 0
+    # ckt.D_algo(l="2gat",v=1)  # 1 0 0 0 0
+    # ckt.D_algo(l="3gat",v=0)  # 1 1 0 0 0
+    # ckt.D_algo(l="4gat",v=1)  # 0 1 0 0 0
+    # ckt.D_algo(l="5gat",v=1)  # 1 0 0 0 0
+    # ckt.D_algo(l="6gat",v=0)  # 1 1 0 0 0
+    # ckt.D_algo(l="7gat",v=1)  # 0 1 0 0 0
+    # ckt.D_algo(l="8gat",v=1)  # 1 0 0 0 0
+    # ckt.D_algo(l="9gat",v=0)  # 1 1 0 0 0
+    # ckt.D_algo(l="3gat",v=1)  # 0 1 0 0 0
+    # ckt.D_algo(l="2gat",v=1)  # 1 0 0 0 0
+    # ckt.D_algo(l="1gat",v=0)  # 1 1 0 0 0
+    # ckt.D_algo(l="3gat",v=1)  # 0 1 0 0 0
+    # ckt.D_algo(l="2gat",v=1)  # 1 0 0 0 0
+    # ckt.D_algo(l="1gat",v=0)  # 1 1 0 0 0
+    
+    #ckt.D_algo(l="10gat",v=0) # 1 1 0 0 0
    
+    fault_list = ckt.getFaultList()
+    flist = ckt.formatFaultlist(fault_list)
 
-    # ckt.makeJFrontier()
-    # print("J frontier is: ", ckt.J_frontier)
-    
-    # l = ckt.J_frontier[0][0]
-    # v = ckt.J_frontier[0][1]
-
-    # ckt.D_justify(l,v)
-    # [print(k,v) for k,v in ckt.gate_values.items()]
-    
-    #ckt.makeDFrontier()
-    #print("D frontier is: ", ckt.D_frontier)
+    for fault in flist:
+        gate = fault[0]
+        val = int(fault[1])
+        ckt.D_algo(l=gate,v=val)
+    #[print(k,v) for k,v in ckt.gate_values.items()]

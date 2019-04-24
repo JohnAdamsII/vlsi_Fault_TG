@@ -53,7 +53,27 @@ def main():
                 print("Please read in netlist first")
         #! perform D algorithmn option
         elif num == "3":
-            pass
+            if ckt_read and not(collapsed):
+
+                fault_list = ckt.getFaultList()
+                flist = ckt.formatFaultlist(fault_list)
+
+                for fault in flist:
+                    gate = fault[0]
+                    val = int(fault[1])
+                    ckt.D_algo(l=gate,v=val)
+            
+            elif ckt_read and collapsed:
+                 new_fault_list = ckt.formatFaultlist(collapsed_fault_list)
+                 
+                 for fault in new_fault_list:
+                    gate = fault[0]
+                    val = int(fault[1])
+                    ckt.D_algo(l=gate,v=val)
+            else:
+                print("Please read in netlist first")
+
+
         #! use Set Solver option
         elif num == "4":
             if ckt_read and not(collapsed):
