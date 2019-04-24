@@ -272,7 +272,7 @@ class circuit:
                 
         return expr[self.POs[PO]] #! ONLY WORKS WITH ONE PO right now
 
-    def get_clauses(self,PO,gate,stuck_at_value,fanouts=[]):
+    def get_clauses(self,PO,gate,stuck_at_value,verb,fanouts=[]):
         """ formats circuit expressions into clauses to write to CNF file for set solving
         need to be modify to handle different gate names in other circuits """
         
@@ -282,14 +282,17 @@ class circuit:
         else:
             #! if fanout
             faulty_expr = self.getExpr(stuck_at_value=stuck_at_value,fanouts=gate, PO=PO)
-
-        print("faulty expression is: ",faulty_expr)
+        if verb:
+            print("faulty expression is: ",faulty_expr)
         ff_ckt = self.getExpr(PO=PO) #get fault free circuit expression
-        print("fault free expression is: ",ff_ckt)
-        #print("simplified fault free expr = ",sympify(ff_ckt))
+        if verb:
+            print("fault free expression is: ",ff_ckt)
+            
         xor_expr = Xor(ff_ckt,faulty_expr) #get xor expr
         xor_expr = to_cnf(xor_expr,simplify=True) #convert xor expr to CNF
-        print("faulty XOR fault_free = ",xor_expr)
+
+        if verb:
+            print("faulty XOR fault_free = ",xor_expr)
 
         if xor_expr == False:
             return "UNDECTECTABLE!"
@@ -330,15 +333,15 @@ class circuit:
         return new_clauses
 
 
-    def setSolver(self,gate,stuck_at_value,PO=0,fanouts=[]):
+    def setSolver(self,gate,stuck_at_value,PO=0,verb=True,fanouts=[]):
         """ writes clauses to CNF file and calls miniSAT """
-        if gate in self.PIs:
+        if gate in self.PIs and verb:
             print(gate,"stuck at ",stuck_at_value)
 
         if type(gate) == list:
-            clauses = self.get_clauses(PO,gate,stuck_at_value,fanouts)
+            clauses = self.get_clauses(PO,gate,stuck_at_value,verb,fanouts)
         else:
-            clauses = self.get_clauses(PO,gate,stuck_at_value)
+            clauses = self.get_clauses(PO,gate,stuck_at_value,verb)
 
         if clauses == "UNDECTECTABLE!":
             clauses = ['1','-1']
@@ -351,17 +354,21 @@ class circuit:
             for clause in clauses:
                 f.write(clause+" 0\n")
         
-        return self.runMiniSAT()
+        return self.runMiniSAT(verb)
 
-    def runMiniSAT(self):
+    def runMiniSAT(self,verb):
         """ sends cnf file with written clauses to miniSAT solver"""
-
+     
         miniSAT_path = parent_dir + '/bin/minisat'
         cnf_path = parent_dir + '/bin/'
-        runminiSAT = subprocess.call(miniSAT_path +" -verb=0 "+cnf_path+'/cnf_file'+" "+cnf_path+"out.txt", shell=True)
-        return self.getSAT()
+        if verb:
+            runminiSAT = subprocess.call(miniSAT_path +" -verb=1 "+cnf_path+'/cnf_file'+" "+cnf_path+"out.txt", shell=True)
+        else:
+            runminiSAT = subprocess.call(miniSAT_path +" -verb=0 "+cnf_path+'/cnf_file'+" "+cnf_path+"out.txt", shell=True,stdout=open(os.devnull, 'wb'))
+
+        return self.getSAT(verb)
     
-    def getSAT(self):
+    def getSAT(self,verb):
         """ read output of set solver and return if expression is SAT 
         and what vector makes expression true if any  """
 
@@ -378,10 +385,12 @@ class circuit:
       
         if SAT and len(final_vec) < len(self.PIs):
             final_vec.extend([0] * (len(self.PIs) - len(final_vec)) )
-            print("input vector: ",final_vec," will detect fault!")
+            if verb:
+                print("input vector: ",final_vec," will detect fault!")
             return (SAT, final_vec)
         else: 
-            print("input vector: ",final_vec," will detect fault!")   
+            if verb:
+                print("input vector: ",final_vec," will detect fault!")   
             return (SAT,final_vec)
     
     
@@ -389,7 +398,7 @@ class circuit:
         pass
 
     def solve(self,l,v):
-        test = self.setSolver(gate=l,stuck_at_value=v)
+        test = self.setSolver(gate=l,stuck_at_value=v,verb=0)
         SAT = test[0]
         if SAT:
             print("D has propagated to PO and all lines justified!")
@@ -399,8 +408,14 @@ class circuit:
         
     
     def D_algo(self,l,v):
-        
+
+        print("initalizing all values to x")
+        [print(k,v) for k,v in ckt.gate_values.items()]
+     
         self.D_propagate(l,v)
+
+        print("Assignments from propagation: ")
+        [print(k,v) for k,v in ckt.gate_values.items()]
 
         ckt.makeJFrontier()
         print("J frontier is: ", ckt.J_frontier)
@@ -412,11 +427,10 @@ class circuit:
     
     def D_propagate(self,l,v):
         PO = self.POs[0]
-        #print("l= ",l)
-        #print("v= ",v)
+        
         #! Base case
         if self.gate_values[PO]['output'] == 'D' or self.gate_values[PO]['output'] == '~D':
-            print("SUCCESS")
+            print("SUCCESSFUL PROPAGATIONS!")
             return "SUCCESS"
           
         g = self.getOutput(l) #! current gate output
