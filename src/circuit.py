@@ -408,28 +408,27 @@ class circuit:
             print("D has propagated to PO and all lines justified!")
             VEC = test[1]
             print("Test vector: ",VEC," will detect ",l," stuck at ",v)
-        
-        
-    
+
     def D_algo(self,l,v):
 
         print("initalizing all values to x")
         [print(k,v) for k,v in self.gate_values.items()]
-     
+
         self.D_propagate(l,v)
 
         print("Assignments from propagation: ")
         [print(k,v) for k,v in self.gate_values.items()]
 
+
+      
         self.makeJFrontier()
-        #print("J frontier is: ", ckt.J_frontier)
 
         self.makeDFrontier()
-        #print("D frontier is: ", ckt.D_frontier)
     
         self.solve(l=l,v=v)
     
     def D_propagate(self,l,v):
+
         PO = self.POs[0]
         
         #! Base case
@@ -481,9 +480,17 @@ class circuit:
             self.gate_values[g]['output'] = 'D'
             
         return self.D_propagate(l=g,v=self.gate_values[g]['output'])
+
+
             
+    def initckt(self):
+
+        for k in self.gate_values.keys():
+            for k2 in self.gate_values[k]:
+                self.gate_values[k][k2] == 'x'
+
+
     def D_justify(self,l,v):
-        #! NOT WORKING
         print(l)
         g = self.getOutput(l)
 
@@ -576,12 +583,51 @@ class circuit:
 
 if __name__ == '__main__':
 
-    ckt = circuit()
-    ckt.makeCkt("t4_21.ckt")
+    # ckt = circuit()
     
     # ckt.D_algo(l="1gat",v=1)  # 0 1 0 0 0
-    # ckt.D_algo(l="2gat",v=1)  # 1 0 0 0 0
+   
+    # ckt = circuit()
+    # ckt.makeCkt("t4_21.ckt")
     # ckt.D_algo(l="3gat",v=0)  # 1 1 0 0 0
+      
+    # ckt1 = circuit()
+    # ckt1.makeCkt("t4_21.ckt")
+    # fault_list = ckt1.getFaultList()
+    # flist = ckt1.formatFaultlist(fault_list)
+    # ckt1.gate_values = {}
+
+    ckt = read_Netlist('t4_21.ckt')
+    PIs = ckt.PIs
+    POs = ckt.POs
+    new_wires = []
+    wires = ckt.wires
+
+    for i in wires:
+        new_wires.append(i[0])
+    all_wires = PIs+new_wires
+    all_wires = sorted(all_wires, key=lambda x: x[0][0])
+
+    flist = []
+
+    for i in all_wires:
+        for j in [0,1]:
+            flist.append([i,j])
+    [print(x) for x in flist]
+    #flist = [ ["1gat",1], ["3gat",0]  ]
+    
+    for i in flist:
+        ckt2 = circuit()
+        ckt2.makeCkt("t4_21.ckt")
+        ckt2.D_algo(l=i[0],v=int(i[1]))
+
+    #[print(k,v) for k,v in ckt.gate_values.items()]
+    #ckt.D_algo(l="3gat",v=0)  # 1 1 0 0 0
+    #ckt.initckt()
+    #[print(k,v) for k,v in ckt.gate_values.items()]
+    
+    #[print(k,v) for k,v in ckt.gate_values.items()]
+
     # ckt.D_algo(l="4gat",v=1)  # 0 1 0 0 0
     # ckt.D_algo(l="5gat",v=1)  # 1 0 0 0 0
     # ckt.D_algo(l="6gat",v=0)  # 1 1 0 0 0
@@ -596,12 +642,15 @@ if __name__ == '__main__':
     # ckt.D_algo(l="1gat",v=0)  # 1 1 0 0 0
     
     #ckt.D_algo(l="10gat",v=0) # 1 1 0 0 0
-   
-    fault_list = ckt.getFaultList()
-    flist = ckt.formatFaultlist(fault_list)
+    # ckt = circuit()
+    # ckt.makeCkt("t4_21.ckt")
+    # fault_list = ckt.getFaultList()
+    # flist = ckt.formatFaultlist(fault_list)
 
-    for fault in flist:
-        gate = fault[0]
-        val = int(fault[1])
-        ckt.D_algo(l=gate,v=val)
+    # for fault in flist:
+    #     gate = fault[0]
+    #     val = int(fault[1])
+    #     ckt = circuit()
+    #     ckt.makeCkt("t4_21.ckt")
+    #     ckt.D_algo(l=gate,v=val)
     #[print(k,v) for k,v in ckt.gate_values.items()]

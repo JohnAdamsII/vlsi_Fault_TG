@@ -55,21 +55,29 @@ def main():
         elif num == "3":
             if ckt_read and not(collapsed):
 
-                fault_list = ckt.getFaultList()
-                flist = ckt.formatFaultlist(fault_list)
+                #fault_list = ckt.getFaultList()
+                #flist = ckt.formatFaultlist(fault_list)
+                flist = getflist(ckt_file)
 
-                for fault in flist:
-                    gate = fault[0]
-                    val = int(fault[1])
-                    ckt.D_algo(l=gate,v=val)
+                for i in flist:
+                    ckt2 = circuit()
+                    ckt2.makeCkt(ckt_file)
+                    ckt2.D_algo(l=i[0],v=int(i[1]))
+                    # gate = fault[0]
+                    # val = int(fault[1])
+                    # ckt.D_algo(l=gate,v=val)
             
             elif ckt_read and collapsed:
-                 new_fault_list = ckt.formatFaultlist(collapsed_fault_list)
+                 #new_fault_list = ckt.formatFaultlist(collapsed_fault_list)
+                 new_fault_list = getflist(ckt_file)
                  
-                 for fault in new_fault_list:
-                    gate = fault[0]
-                    val = int(fault[1])
-                    ckt.D_algo(l=gate,v=val)
+                 for i in new_fault_list:
+                     ckt2 = circuit()
+                     ckt2.makeCkt(ckt_file)
+                     ckt2.D_algo(l=i[0],v=int(i[1]))
+                    # gate = fault[0]
+                    # val = int(fault[1])
+                    # ckt.D_algo(l=gate,v=val)
             else:
                 print("Please read in netlist first")
 
@@ -99,6 +107,34 @@ def main():
             sys.exit(0)
         else:
             print("Invalid input!")
-    
+
+
+
+
+
+
+
+
+def getflist(cktfile):
+
+    ckt = read_Netlist(cktfile)
+    PIs = ckt.PIs
+    POs = ckt.POs
+    new_wires = []
+    wires = ckt.wires
+
+    for i in wires:
+        new_wires.append(i[0])
+    all_wires = PIs+new_wires
+    all_wires = sorted(all_wires, key=lambda x: x[0][0])
+
+    flist = []
+
+    for i in all_wires:
+        for j in [0,1]:
+            flist.append([i,j])
+    return flist
+
+
 if __name__ == '__main__':
     main()
