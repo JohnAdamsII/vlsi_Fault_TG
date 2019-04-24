@@ -15,7 +15,7 @@ from circuit import circuit
 class test_circuit(unittest.TestCase):
 
     def test_setSolver(self):
-        
+        """
         ckt1 = circuit()
         ckt1.makeCkt("t4_21.ckt")
         print ("*----------------------------------------*\n*========================================*")
@@ -239,13 +239,13 @@ class test_circuit(unittest.TestCase):
 
         self.assertEqual(ckt3.setSolver(["igat","cgat"],1)[1], [1,1,0,1,0])
         print ("----------------------------------------\n========================================")
+        """
 
-        
         ckt4 = circuit()
         ckt4.makeCkt("t5_26a_v1.ckt")
         # x = 1, y = 2, c = 3
         # 11 = (3 & 1 & 2) | (3 & ~1 & ~2) | ( ~3 & 1 & ~2) | ( ~3 & ~1 & 2)
-        #print ("*----------------------------------------*\n*========================================*")
+        print ("*----------------------------------------*\n*========================================*")
 
         self.assertEqual(ckt4.setSolver("10gat",0)[1], [0,0,0])      #V
         print ("----------------------------------------\n========================================")
@@ -277,22 +277,30 @@ class test_circuit(unittest.TestCase):
         self.assertEqual(ckt4.setSolver(["10gat","8gat"],1)[1], [0,1,1])      #T2
         print ("----------------------------------------\n========================================")
         
-        ##self.assertEqual(ckt4.setSolver(["12gat","8gat"],0)[1], [x,x,x])      #T3  //for detecting CO
+        self.assertEqual(ckt4.setSolver(["12gat","8gat"],0,1)[1], [0,0,0])      #T3  //for detecting CO
         print ("----------------------------------------\n========================================")
 
-        ##self.assertEqual(ckt4.setSolver(["12gat","8gat"],1)[1], [x,x,x])      #T3  //for detecting CO
+        self.assertEqual(ckt4.setSolver(["12gat","8gat"],1,1)[1], [0,1,1])      #T3  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("7gat",0)[1], [0,0,0])      #R
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("7gat",0,1)[1], [0,0,1])      #R  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("7gat",1)[1], [0,1,0])      #R
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("7gat",1,1)[1], [0,1,1])      #R  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("6gat",0)[1], [0,0,0])      #Q
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("6gat",0,1)[1], [0,0,1])      #Q  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("6gat",1)[1], [1,0,0])      #Q
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("6gat",1,1)[1], [1,0,1])      #Q  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("5gat",0)[1], [0,1,0])      #N
@@ -302,9 +310,13 @@ class test_circuit(unittest.TestCase):
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["8gat","5gat"],0)[1], [0,1,1])      #N1
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["8gat","5gat"],0,1)[1], [0,1,1])      #N1  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["8gat","5gat"],1)[1], [0,0,1])      #N1
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["8gat","5gat"],1,1)[1], [0,0,1])      #N1  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["10gat","5gat"],0)[1], [0,1,0])      #N2
@@ -314,81 +326,125 @@ class test_circuit(unittest.TestCase):
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("4gat",0)[1], [0,1,0])      #L
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("4gat",0,1)[1], [0,0,0])      #L  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("4gat",1)[1], [1,1,0])      #L
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("4gat",1,1)[1], [1,1,0])      #L  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["6gat","4gat"],0)[1], [1,0,0])      #L1
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["6gat","4gat"],0,1)[1], [1,0,1])      #L1  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["6gat","4gat"],1)[1], [1,1,0])      #L1
+        print ("----------------------------------------")
+        #self.assertEqual(ckt4.setSolver(["6gat","4gat"],1,1)[1], ["x","x","x"])      #L1  //for detecting CO    XOR fault_free =  False
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["7gat","4gat"],0)[1], [0,1,0])      #L2
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["7gat","4gat"],0,1)[1], [0,1,1])      #L2  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["7gat","4gat"],1)[1], [1,1,0])      #L2
+        print ("----------------------------------------")
+        #self.assertEqual(ckt4.setSolver(["7gat","4gat"],1,1)[1], ["x","x","x"])      #L2  //for detecting CO    XOR fault_free =  False
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt4.setSolver(["12gat","4gat"],0,1)[1], ["x","x","x"])      #L3  //for detecting CO
+        self.assertEqual(ckt4.setSolver(["12gat","4gat"],0,1)[1], [0,0,0])      #L3  //for detecting CO
         print ("----------------------------------------\n========================================")
 
-        ##self.assertEqual(ckt4.setSolver(["12gat","4gat"],1)[1], [x,x,x])      #L3  //for detecting CO
+        self.assertEqual(ckt4.setSolver(["12gat","4gat"],1,1)[1], [1,1,0])      #L3  //for detecting CO
         print ("----------------------------------------\n========================================")
         
         self.assertEqual(ckt4.setSolver("3gat",0)[1], [0,0,1])      #CI
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("3gat",0,1)[1], [0,1,1])      #C  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("3gat",1)[1], [0,0,0])      #CI
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("3gat",1,1)[1], [0,1,0])      #CI  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["9gat","3gat"],0)[1], [0,0,1])      #CI1
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt4.setSolver(["9gat","3gat"],1)[1], ["x","x",1])      #CI1      //possibly wrong
+        self.assertEqual(ckt4.setSolver(["9gat","3gat"],1)[1], [0,0,0])      #CI1      //possibly wrong
         print ("----------------------------------------\n========================================")
 
-        #self.assertEqual(ckt4.setSolver(["8gat","3gat"],0)[1], [x,x,x])      #CI2           //possibly wrong
+        self.assertEqual(ckt4.setSolver(["8gat","3gat"],0)[1], [0,1,1])      #CI2       //possibly wrong
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["8gat","3gat"],0,1)[1], [0,1,1])      #CI2  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["8gat","3gat"],1)[1], [0,1,0])      #CI2
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["8gat","3gat"],1,1)[1], [0,1,0])      #CI2  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("2gat",0)[1], [0,1,0])      #Y
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("2gat",0,1)[1], [0,1,1])      #Y  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("2gat",1)[1], [0,0,0])      #Y
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("2gat",1,1)[1], [0,0,1])      #Y  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["4gat","2gat"],0)[1], [1,1,0])      #Y1
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["4gat","2gat"],0,1)[1], [1,1,0])      #Y1  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["4gat","2gat"],1)[1], [1,0,0])      #Y1
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["4gat","2gat"],1,1)[1], [1,0,0])      #Y1  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["7gat","2gat"],0)[1], [0,1,0])      #Y2
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["7gat","2gat"],0,1)[1], [0,1,1])      #Y2  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["7gat","2gat"],1)[1], [0,0,0])      #Y2
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["7gat","2gat"],1,1)[1], [0,0,1])      #Y2  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("1gat",0)[1], [1,0,0])      #X
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("1gat",0,1)[1], [1,0,1])      #X  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver("1gat",1)[1], [0,0,0])      #X
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver("1gat",1,1)[1], [0,0,1])      #X  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["4gat","1gat"],0)[1], [1,1,0])      #X1
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["4gat","1gat"],0,1)[1], [1,1,0])      #X1  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["4gat","1gat"],1)[1], [0,1,0])      #X1
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["4gat","1gat"],1,1)[1], [0,1,0])      #X1  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["6gat","1gat"],0)[1], [1,0,0])      #X2
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["6gat","1gat"],0,1)[1], [1,0,1])      #X2  //for detecting CO
         print ("----------------------------------------\n========================================")
 
         self.assertEqual(ckt4.setSolver(["6gat","1gat"],1)[1], [0,0,0])      #X2
+        print ("----------------------------------------")
+        self.assertEqual(ckt4.setSolver(["6gat","1gat"],1,1)[1], [0,0,1])      #X2  //for detecting CO
         print ("----------------------------------------\n========================================")
 
 if __name__ == '__main__':
