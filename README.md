@@ -17,4 +17,5 @@ compile instructions
     11. run command "python3 main.py"
 
 NOTE: the project only supports .ckt files with gate naming convention of [int]gat and [letter]gat
-example 1gat 2gat 3gat agat bgat 3gat
+example: 1gat 2gat 3gat 
+or       agat bgat 3gat
