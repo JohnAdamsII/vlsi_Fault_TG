@@ -1,25 +1,15 @@
-clone or download repo <LINK> or get from canvas
-run "git submodule update --init --recursive" to pull the boolean set solver
-
 pip3 install sympy
 sudo apt-get install libz-dev
-
 cd to vender/minisat
 run "make config prefix=$PREFIX"
 run "sudo make install"
-
-
 move benchmark (.ckt files) to the project vlsi_Fault_TG/benchmarks
 cd to project directory vlsi_Fault_TG/src
 run command "python3 main.py"
 
-tested on linux Ubuntu 18.04 LTS and Windows 10 
+tested on linux Ubuntu 18.04 LTS
 
 dependencies:
 git
 python3
 g++ 
-
-
-make .sh shell script to download and build everything
-test on mac and windows

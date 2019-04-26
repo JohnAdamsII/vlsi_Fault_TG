@@ -65,7 +65,6 @@ class circuit:
         return self.gate_map[gate][2]
     
     def i(self, gate):
-        #! check this
         return self.gate_map[gate][3]
 
     def cXORi(self, gate):
@@ -130,7 +129,6 @@ class circuit:
             self.assignOutput(gate)
 
     def getFaultList(self):
-        #! Need to add fanout to fault list!
         all_gates = self.gates + self.PIs
         fault_list = []
         
@@ -149,11 +147,9 @@ class circuit:
 
 
     def collapseFaults(self):
-         #! Need to add fanout to fault collapsing!
         fault_set = set()
         for gate in self.gates:
             if self.getType(gate) == 'not':
-                #! add support for not gates here
                 continue
             eq = self.func_eq(gate)
             print("functionally equivalent faults: ","{"+str(eq[0])+","+str(eq[1])+","+str(eq[2])+"}")
@@ -270,7 +266,7 @@ class circuit:
                 
                 expr[gate] = (inputs[0] | inputs[1])
                 
-        return expr[self.POs[PO]] #! ONLY WORKS WITH ONE PO right now
+        return expr[self.POs[PO]]
 
     def get_clauses(self,PO,gate,stuck_at_value,verb,fanouts=[]):
         """ formats circuit expressions into clauses to write to CNF file for set solving
@@ -303,10 +299,6 @@ class circuit:
        
         clauses = str(xor_expr).split("&")
 
-        # if not("gat" in self.POs[0]):
-            #call formating function to rename gates
-        #     #! Handle stupid circuit names
-  
         for index,item in enumerate(clauses):
             clauses[index] = item.strip()
             clauses[index] = clauses[index].replace("(","")
@@ -316,7 +308,7 @@ class circuit:
             clauses[index] = clauses[index].replace("  "," ")
             clauses[index] = clauses[index].replace("gat","") #! THIS WILL BREAK WITH DIFFERENT GATE NAMES!
         
-        if self.POs[0][0].isalpha():             #! will need to change for t5_26a
+        if self.POs[0][0].isalpha():            
             return self.formatClauses(clauses)  
         else:
             return clauses
@@ -381,7 +373,6 @@ class circuit:
         SAT = True if lines[0] == 'SAT' else False
         if SAT:
             vector = lines[1][:-1].split()
-            #print(SAT,vector)
         if SAT:
             final_vec = [0 if '-' in x else 1 for x in vector ]
         if not(SAT):
@@ -480,15 +471,12 @@ class circuit:
             self.gate_values[g]['output'] = 'D'
             
         return self.D_propagate(l=g,v=self.gate_values[g]['output'])
-
-
-            
+      
     def initckt(self):
 
         for k in self.gate_values.keys():
             for k2 in self.gate_values[k]:
                 self.gate_values[k][k2] == 'x'
-
 
     def D_justify(self,l,v):
         print(l)
@@ -516,8 +504,7 @@ class circuit:
             for Input in inputs:
                 return self.D_justify(l=Input,v=inval)
         else:
-            print("DO SOMETHING?!?!!?")
-            #! pick a random input of l and justify(input,inval) ??       
+            print("")
     
     def makeJFrontier(self):
         #! consider storing direction ?
@@ -542,10 +529,7 @@ class circuit:
                             continue    
                         else:
                             self.J_frontier.append([k,self.gate_values[k]['output']])
-                            #print(k,self.gate_values[k]['output'])
-            #else:
-                #print(k," will not be in J-frontier")
-   
+
     def makeDFrontier(self):
         for k in self.gate_values.keys():
             if self.gate_values[k]['output'] == 'x':
@@ -583,20 +567,6 @@ class circuit:
 
 if __name__ == '__main__':
 
-    # ckt = circuit()
-    
-    # ckt.D_algo(l="1gat",v=1)  # 0 1 0 0 0
-   
-    # ckt = circuit()
-    # ckt.makeCkt("t4_21.ckt")
-    # ckt.D_algo(l="3gat",v=0)  # 1 1 0 0 0
-      
-    # ckt1 = circuit()
-    # ckt1.makeCkt("t4_21.ckt")
-    # fault_list = ckt1.getFaultList()
-    # flist = ckt1.formatFaultlist(fault_list)
-    # ckt1.gate_values = {}
-
     ckt = read_Netlist('t4_21.ckt')
     PIs = ckt.PIs
     POs = ckt.POs
@@ -614,43 +584,8 @@ if __name__ == '__main__':
         for j in [0,1]:
             flist.append([i,j])
     [print(x) for x in flist]
-    #flist = [ ["1gat",1], ["3gat",0]  ]
-    
+   
     for i in flist:
         ckt2 = circuit()
         ckt2.makeCkt("t4_21.ckt")
         ckt2.D_algo(l=i[0],v=int(i[1]))
-
-    #[print(k,v) for k,v in ckt.gate_values.items()]
-    #ckt.D_algo(l="3gat",v=0)  # 1 1 0 0 0
-    #ckt.initckt()
-    #[print(k,v) for k,v in ckt.gate_values.items()]
-    
-    #[print(k,v) for k,v in ckt.gate_values.items()]
-
-    # ckt.D_algo(l="4gat",v=1)  # 0 1 0 0 0
-    # ckt.D_algo(l="5gat",v=1)  # 1 0 0 0 0
-    # ckt.D_algo(l="6gat",v=0)  # 1 1 0 0 0
-    # ckt.D_algo(l="7gat",v=1)  # 0 1 0 0 0
-    # ckt.D_algo(l="8gat",v=1)  # 1 0 0 0 0
-    # ckt.D_algo(l="9gat",v=0)  # 1 1 0 0 0
-    # ckt.D_algo(l="3gat",v=1)  # 0 1 0 0 0
-    # ckt.D_algo(l="2gat",v=1)  # 1 0 0 0 0
-    # ckt.D_algo(l="1gat",v=0)  # 1 1 0 0 0
-    # ckt.D_algo(l="3gat",v=1)  # 0 1 0 0 0
-    # ckt.D_algo(l="2gat",v=1)  # 1 0 0 0 0
-    # ckt.D_algo(l="1gat",v=0)  # 1 1 0 0 0
-    
-    #ckt.D_algo(l="10gat",v=0) # 1 1 0 0 0
-    # ckt = circuit()
-    # ckt.makeCkt("t4_21.ckt")
-    # fault_list = ckt.getFaultList()
-    # flist = ckt.formatFaultlist(fault_list)
-
-    # for fault in flist:
-    #     gate = fault[0]
-    #     val = int(fault[1])
-    #     ckt = circuit()
-    #     ckt.makeCkt("t4_21.ckt")
-    #     ckt.D_algo(l=gate,v=val)
-    #[print(k,v) for k,v in ckt.gate_values.items()]
